@@ -1,10 +1,12 @@
+import os
+
 import uvicorn as uvicorn
-from dotenv import dotenv_values
+from dotenv import dotenv_values, load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
-config = dotenv_values(".env")
+load_dotenv()
 
 app = FastAPI()
 
@@ -20,7 +22,7 @@ app.add_middleware(
 
 @app.get('/api/')
 async def get_items():
-    return {"Status": config["STATUS"]}
+    return {"Status": os.getenv("STATUS")}
 
 
 if __name__ == "__main__":
