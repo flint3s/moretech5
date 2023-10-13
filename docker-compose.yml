@@ -1,13 +1,35 @@
-version: '3.1'
+version: '3.9'
+
 services:
+  backend:
+    image: siailyadev/moretech5-backend:0.0.1
+    container_name: "backend"
+    env_file:
+      - stack.env
+    ports:
+      - '5000:5000'
+
+  frontend:
+    image: siailyadev/moretech5-frontend:0.0.1
+    container_name: 'frontend'
+    ports:
+      - '3000:80'
+
   mongo:
     image: mongo
     container_name: "mongo"
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: flints
-      MONGO_INITDB_ROOT_PASSWORD: moretechababa
+    env_file:
+      - stack.env
     volumes:
-      - './dockervolume/mongodb:/data/db'
+      - mongo:/data/db
     ports:
-      - 27017:27017
+      - '27017:27017'
+
+volumes:
+  mongo:
+    driver: local
+    driver_opts:
+       o: bind
+       type: none
+       device: /var/local/mongo
