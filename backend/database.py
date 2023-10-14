@@ -11,8 +11,12 @@ department_collection = client[database_name]["departments"]
 atms_collection = client[database_name]["atms"]
 
 
-def get_statistics():
-    return department_collection.find_one({}, {'_id': False})
+def get_department(department_id):
+    return department_collection.find_one({"department_id": department_id}, {'_id': False})
+
+
+def get_atm(atm_id):
+    return atms_collection.find_one({"atm_id": atm_id}, {'_id': False})
 
 
 def get_deps_in_coords(latitude1: float, longitude1: float, latitude2: float, longitude2: float):
@@ -75,6 +79,7 @@ def get_deps_by_open_status(person_status: str):
 
 
 if __name__ == "__main__":
+    pass
     # By coords
     # deps = get_deps_in_coords(
     #     latitude1=200.0,
@@ -87,6 +92,9 @@ if __name__ == "__main__":
     # deps = get_deps_by_address("Зеленоградский» Филиала")
 
     # By open status
-    deps = get_deps_by_open_status("individual")
-    for i in deps:
-        print(deps)
+    # deps = get_deps_by_open_status("individual")
+    # for i in deps:
+    #     print(deps)
+
+    # Get atm
+    # print(get_atm(750))

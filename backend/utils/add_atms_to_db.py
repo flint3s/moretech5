@@ -29,18 +29,21 @@ def create_atm(address, latitude, longitude, allDay, wheelchair, blind, nfcForBa
 
 with open("../atms.txt", "r", encoding='utf-8') as f:
     all_atms = json.loads(f.read())
+    addresses = []
     for atm in all_atms["atms"]:
-        create_atm(
-            address=atm["address"],
-            latitude=atm["latitude"],
-            longitude=atm["longitude"],
-            allDay=atm["allDay"],
-            wheelchair=atm["services"]["wheelchair"],
-            blind=atm["services"]["blind"],
-            nfcForBankCards=atm["services"]["nfcForBankCards"],
-            qrRead=atm["services"]["qrRead"],
-            supportsUsd=atm["services"]["supportsUsd"],
-            supportsChargeRub=atm["services"]["supportsChargeRub"],
-            supportsEur=atm["services"]["supportsEur"],
-            supportsRub=atm["services"]["supportsRub"]
-        )
+        if atm["address"] not in addresses:
+            addresses.append(atm["address"])
+            create_atm(
+                address=atm["address"],
+                latitude=atm["latitude"],
+                longitude=atm["longitude"],
+                allDay=atm["allDay"],
+                wheelchair=atm["services"]["wheelchair"],
+                blind=atm["services"]["blind"],
+                nfcForBankCards=atm["services"]["nfcForBankCards"],
+                qrRead=atm["services"]["qrRead"],
+                supportsUsd=atm["services"]["supportsUsd"],
+                supportsChargeRub=atm["services"]["supportsChargeRub"],
+                supportsEur=atm["services"]["supportsEur"],
+                supportsRub=atm["services"]["supportsRub"]
+            )
