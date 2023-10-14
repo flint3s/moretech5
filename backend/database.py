@@ -1,7 +1,11 @@
+from math import sqrt
+
 import pytz
 import datetime
 
 from pymongo import MongoClient
+
+from forms import UserCoords
 
 conn_string = "mongodb://flints:moretechababa@154.194.53.172:27017"
 client = MongoClient(conn_string)
@@ -9,6 +13,8 @@ client = MongoClient(conn_string)
 database_name = "moretech"
 department_collection = client[database_name]["departments"]
 atms_collection = client[database_name]["atms"]
+
+best_departments_count = 10
 
 
 def get_department(department_id):
@@ -77,6 +83,25 @@ def get_deps_by_open_status(person_status: str):
                 opened_deps.append(dep)
     return opened_deps
 
+
+def get_ten_nearest_departments(user_coords: UserCoords):
+    departments = department_collection.find({})
+    result = list()
+    for department in departments:
+        result.append({
+            "id": department["department_id"],
+            "distance": get_distance(user_coords.latitude, user_coords.longitude,
+                                     department["latitude"], department["longitude"])
+        })
+    result = result[:best_departments_count]
+    result_departments = list()
+    for res in result:
+        result_departments.append(department_collection.find_one({"department_id": res["id"]}, {'_id': False}))
+    return result_departments
+
+
+def get_distance(x_1: float, y_1: float, x_2: float, y_2: float):
+    return sqrt((x_2 - x_1) ** 2 + (y_2 - y_1) ** 2)
 
 if __name__ == "__main__":
     pass
