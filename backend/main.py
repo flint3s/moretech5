@@ -1,11 +1,10 @@
-import os
-
 import uvicorn as uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import get_deps_in_coords, get_deps_by_address, get_deps_by_open_status
+from database import get_deps_in_coords, get_deps_by_address, get_deps_by_open_status, \
+    get_atms_by_address, get_atms_in_coords
 from forms import CoordsDto, AddressDto, PersonStatusDto
 
 load_dotenv()
@@ -29,12 +28,14 @@ async def get_items():
 
 @app.post("/api/departments_in_coords")
 async def departments_in_coords(coords: CoordsDto):
-    return get_deps_in_coords(coords.latitude1, coords.longitude1, coords.latitude2, coords.longitude2)
+    return {"deps": get_deps_in_coords(coords.latitude1, coords.longitude1, coords.latitude2, coords.longitude2),
+            "atms": get_atms_in_coords(coords.latitude1, coords.longitude1, coords.latitude2, coords.longitude2)}
 
 
 @app.post("/api/department_by_address")
 async def department_by_address(address_dto: AddressDto):
-    return get_deps_by_address(address_dto.address)
+    return {"deps": get_deps_by_address(address_dto.address),
+            "atms": get_atms_by_address(address_dto.address)}
 
 
 @app.post("/api/department_by_open_status")
@@ -48,4 +49,5 @@ if __name__ == "__main__":
     print("http://127.0.0.1:5000/api/")
     print("http://127.0.0.1:5000/api/departments_in_coords")
     print("http://127.0.0.1:5000/api/department_by_address")
+    print("http://127.0.0.1:5000/api/department_by_open_status")
     uvicorn.run(app, host="0.0.0.0", port=5000, log_level="info")

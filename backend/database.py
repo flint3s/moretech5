@@ -8,6 +8,7 @@ client = MongoClient(conn_string)
 
 database_name = "moretech"
 department_collection = client[database_name]["departments"]
+atms_collection = client[database_name]["atms"]
 
 
 def get_statistics():
@@ -20,10 +21,22 @@ def get_deps_in_coords(latitude1: float, longitude1: float, latitude2: float, lo
                                            {'_id': False}))
 
 
+def get_atms_in_coords(latitude1: float, longitude1: float, latitude2: float, longitude2: float):
+    return list(atms_collection.find({"latitude": {"$lt": latitude1, "$gt": latitude2},
+                                      "longitude": {"$gt": longitude1, "$lt": longitude2}},
+                                     {'_id': False}))
+
+
 def get_deps_by_address(address: str):
     return list(
         department_collection.find({"$or": [{"address": {"$regex": address}}, {"salePointName": {"$regex": address}}]},
                                    {'_id': False}))
+
+
+def get_atms_by_address(address: str):
+    return list(
+        atms_collection.find({"$or": [{"address": {"$regex": address}}, {"salePointName": {"$regex": address}}]},
+                             {'_id': False}))
 
 
 def get_deps_by_open_status(person_status: str):
