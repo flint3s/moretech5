@@ -1,0 +1,22 @@
+{
+  "common": {
+    "primaryColor": "#0D69F2FF",
+    "primaryColorHover": "#4789EBFF",
+    "primaryColorPressed": "#0F60D9FF",
+    "primaryColorSuppl": "#4098FCFF",
+    "baseColor": "#FFF",
+    "popoverColor": "#fff",
+    "placeholderColor": "#626F84",
+    "iconColor": "#626F84",
+    "textColorBase": "#2B313BFF",
+    "textColor1": "rgba(70, 78, 86, 1)",
+    "textColor2": "rgba(98, 111, 132, 1)"
+  },
+  "Input": {
+    "colorFocus": "rgba(241, 242, 244, 1)"
+  },
+  "Tag": {
+    "textColorCheckable": "#0D69F2FF",
+    "textColorHoverCheckable": "#4789EBFF"
+  }
+}

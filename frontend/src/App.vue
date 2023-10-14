@@ -2,6 +2,7 @@
   <n-config-provider
       :date-locale="dateRuRU"
       :locale="ruRU"
+      :theme-overrides="themeOverrides"
   >
     <n-dialog-provider>
       <n-message-provider>
@@ -17,6 +18,7 @@
 
 <script lang="ts" setup>
 import {dateRuRU, ruRU} from "naive-ui";
+import themeOverrides from "@/app/naive-ui-theme-overrides.json";
 </script>
 
 <style>
