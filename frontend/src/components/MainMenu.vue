@@ -11,15 +11,15 @@ const items = [1, 2, 3, 4, 5]
 
 const selectedDepartmentType = ref<"departs" | "atms">("departs")
 
+const showDateTimePicker = ref<boolean>(false)
 const selectedVisitTimeVariant = ref<"now" | "oneHourForward" | "other">("now")
-//@ts-ignore
 const selectedTime = ref<number | undefined>()
 
 const selectedRouteType = ref<'pedestrian' | 'driving'>("pedestrian")
 
 
 watchEffect(() => {
-  emit('update:selectedDepartmentType', selectedDepartmentType.value)
+    emit('update:selectedDepartmentType', selectedDepartmentType.value)
 })
 </script>
 
@@ -54,7 +54,7 @@ watchEffect(() => {
                         round
                         checkable
                         :checked="selectedDepartmentType == 'departs'"
-                        @checked-change="() => selectedDepartmentType = 'departs'"
+                        @update-checked="() => selectedDepartmentType = 'departs'"
                         class="chip"
                         type="info"
                     >
@@ -65,7 +65,7 @@ watchEffect(() => {
                         round
                         checkable
                         :checked="selectedDepartmentType == 'atms'"
-                        @checked-change="() => selectedDepartmentType = 'atms'"
+                        @update-checked="() => selectedDepartmentType = 'atms'"
                         class="chip"
                         type="info"
                     >
@@ -84,7 +84,7 @@ watchEffect(() => {
                         round
                         checkable
                         :checked="selectedVisitTimeVariant == 'now'"
-                        @checked-change="() => selectedVisitTimeVariant = 'now'"
+                        @update-checked="() => selectedVisitTimeVariant = 'now'"
                         class="chip"
                         type="info"
                     >
@@ -95,25 +95,52 @@ watchEffect(() => {
                         round
                         checkable
                         :checked="selectedVisitTimeVariant == 'oneHourForward'"
-                        @checked-change="() => selectedVisitTimeVariant = 'oneHourForward'"
+                        @update-checked="() => selectedVisitTimeVariant = 'oneHourForward'"
                         class="chip"
                         type="info"
                     >
                         Через 1 час
                     </n-tag>
-                    <n-tag
-                        bordered
-                        round
-                        checkable
-                        :checked="selectedVisitTimeVariant == 'other'"
-                        @checked-change="() =>{
-                            selectedVisitTimeVariant = 'other';
+                    <n-popover
+                        trigger="click"
+                        :show="showDateTimePicker"
+                        @update-show="(value: boolean) => {
+                            if (value || selectedTime == undefined) return
+
+                            selectedVisitTimeVariant = 'now'
                         }"
-                        class="chip"
-                        type="info"
                     >
-                        Другое время
-                    </n-tag>
+                        <template #trigger>
+                            <n-tag
+                                bordered
+                                round
+                                checkable
+                                class="chip"
+                                :checked="selectedVisitTimeVariant == 'other'"
+                                @click="(value: boolean) => {
+                                    selectedVisitTimeVariant = 'other';
+                                    showDateTimePicker = value
+                                }"
+                            >
+                                Другое время
+                            </n-tag>
+                        </template>
+                        <n-date-picker
+                            panel
+                            type="datetime"
+                            :value="selectedTime"
+                            @update-value="(value: number) =>{
+                                selectedTime = value;
+                            }"
+                            @confirm="() => {
+                                showDateTimePicker = false;
+                            }"
+                            :default-value="new Date()"
+                            value-format="dd.MM.yyyy"
+                        >
+
+                        </n-date-picker>
+                    </n-popover>
                 </n-space>
             </template>
         </n-thing>
@@ -128,7 +155,7 @@ watchEffect(() => {
                         checkable
                         class="chip"
                         :checked="selectedRouteType == 'pedestrian'"
-                        @checked-change="() => selectedRouteType = 'pedestrian'"
+                        @update-checked="() => selectedRouteType = 'pedestrian'"
                     >
                         <template #icon>
                             <n-icon
@@ -145,7 +172,7 @@ watchEffect(() => {
                         checkable
                         class="chip"
                         :checked="selectedRouteType == 'driving'"
-                        @checked-change="() => selectedRouteType = 'driving'"
+                        @update-checked="() => selectedRouteType = 'driving'"
                     >
                         <template #icon>
                             <n-icon
