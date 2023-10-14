@@ -10,3 +10,7 @@ class CoordsDto(BaseModel):
 
 class AddressDto(BaseModel):
     address: str
+
+
+class PersonStatusDto(BaseModel):
+    person_status: str

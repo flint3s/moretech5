@@ -2,11 +2,11 @@ import os
 
 import uvicorn as uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import get_deps_in_coords, get_deps_by_address
-from forms import CoordsDto, AddressDto
+from database import get_deps_in_coords, get_deps_by_address, get_deps_by_open_status
+from forms import CoordsDto, AddressDto, PersonStatusDto
 
 load_dotenv()
 
@@ -24,17 +24,24 @@ app.add_middleware(
 
 @app.get('/api/')
 async def get_items():
-    return {"Status": os.getenv("STATUS")}
+    return status.HTTP_200_OK
 
 
-@app.get("/api/departments_in_coords")
+@app.post("/api/departments_in_coords")
 async def departments_in_coords(coords: CoordsDto):
     return get_deps_in_coords(coords.latitude1, coords.longitude1, coords.latitude2, coords.longitude2)
 
 
-@app.get("/api/department_by_address")
-async def departments_in_coords(address_dto: AddressDto):
+@app.post("/api/department_by_address")
+async def department_by_address(address_dto: AddressDto):
     return get_deps_by_address(address_dto.address)
+
+
+@app.post("/api/department_by_open_status")
+async def department_by_open_status(person_status_dto: PersonStatusDto):
+    if person_status_dto.person_status not in ["lawyer", "individual"]:
+        return
+    return get_deps_by_open_status(person_status_dto.person_status)
 
 
 if __name__ == "__main__":

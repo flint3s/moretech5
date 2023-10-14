@@ -1,4 +1,6 @@
-import json
+import pytz
+import datetime
+
 from pymongo import MongoClient
 
 conn_string = "mongodb://flints:moretechababa@154.194.53.172:27017"
@@ -12,15 +14,51 @@ def get_statistics():
     return department_collection.find_one({}, {'_id': False})
 
 
-def get_deps_in_coords(latitude1, longitude1, latitude2, longitude2):
+def get_deps_in_coords(latitude1: float, longitude1: float, latitude2: float, longitude2: float):
     return list(department_collection.find({"latitude": {"$lt": latitude1, "$gt": latitude2},
                                             "longitude": {"$gt": longitude1, "$lt": longitude2}},
                                            {'_id': False}))
 
 
-def get_deps_by_address(address):
-    return list(department_collection.find({"$or": [{"address": {"$regex": address}}, {"salePointName": {"$regex": address}}]},
-                                           {'_id': False}))
+def get_deps_by_address(address: str):
+    return list(
+        department_collection.find({"$or": [{"address": {"$regex": address}}, {"salePointName": {"$regex": address}}]},
+                                   {'_id': False}))
+
+
+def get_deps_by_open_status(person_status: str):
+    current_datetime = datetime.datetime.now(pytz.timezone('Europe/Moscow'))
+    all_deps = list(department_collection.find({}, {'_id': False}))
+
+    opened_deps = []
+    hours_for_person_status = ""
+    if person_status == "lawyer":
+        hours_for_person_status = "openHours"
+    elif person_status == "individual":
+        hours_for_person_status = "openHoursIndividual"
+
+    for dep in all_deps:
+        if len(dep[hours_for_person_status]) == 7 and \
+                dep[hours_for_person_status][current_datetime.weekday()]["hours"] != "выходной":
+            current_hours_schedule = dep[hours_for_person_status][current_datetime.weekday()]["hours"]
+
+            start_time, end_time = current_hours_schedule.split('-')
+
+            start_time_hours, start_time_minutes = start_time.split(':')
+            start_time_hours = start_time_hours.strip('0')
+            start_time = datetime.time(int(start_time_hours), int(start_time_minutes), 0)
+
+            end_time_hours, end_time_minutes = end_time.split(':')
+            end_time_hours = end_time_hours.strip('0')
+            end_time = datetime.time(int(end_time_hours), int(end_time_minutes), 0)
+
+            d = datetime.datetime.now(pytz.timezone('Europe/Moscow'))
+            start_time = datetime.datetime.combine(d, start_time)
+            end_time = datetime.datetime.combine(d, end_time)
+
+            if start_time.timestamp() <= current_datetime.timestamp() <= end_time.timestamp():
+                opened_deps.append(dep)
+    return opened_deps
 
 
 if __name__ == "__main__":
@@ -33,6 +71,9 @@ if __name__ == "__main__":
     # )
 
     # By address
-    deps = get_deps_by_address("Зеленоградский» Филиала")
+    # deps = get_deps_by_address("Зеленоградский» Филиала")
 
-    print(deps)
+    # By open status
+    deps = get_deps_by_open_status("individual")
+    for i in deps:
+        print(deps)
