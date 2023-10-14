@@ -24,197 +24,199 @@ watchEffect(() => {
 </script>
 
 <template>
-        <div class="flex-row">
-            <n-input
-                class="search-input"
-                :bordered=false
-                placeholder="Город, район, улица, метро"
-            >
-                <template #suffix>
-                    <n-icon>
-                        <Search/>
-                    </n-icon>
-                </template>
-            </n-input>
-            <n-button
-                class="options-button"
-                quaternary
-                :bordered=false
-                :focusable="false"
-            >
-                <template #icon>
+    <div class="flex-row">
+        <n-input
+            class="search-input"
+            :bordered=false
+            placeholder="Город, район, улица, метро"
+        >
+            <template #suffix>
+                <n-icon>
+                    <Search/>
+                </n-icon>
+            </template>
+        </n-input>
+        <n-button
+            class="options-button"
+            secondary
+            :bordered=false
+            :focusable="false"
+        >
+            <template #icon>
+                <n-icon>
                     <OptionsOutlined/>
-                </template>
-            </n-button>
-        </div>
-        <n-thing class="filter-block">
-            <template #action>
-                <n-space>
-                    <n-tag
-                        round
-                        checkable
-                        :checked="selectedDepartmentType == 'departs'"
-                        @update-checked="() => selectedDepartmentType = 'departs'"
-                        class="chip"
-                        type="info"
-                    >
-                        Отделения
-                    </n-tag>
-                    <n-tag
-                        bordered
-                        round
-                        checkable
-                        :checked="selectedDepartmentType == 'atms'"
-                        @update-checked="() => selectedDepartmentType = 'atms'"
-                        class="chip"
-                        type="info"
-                    >
-                        Банкоматы
-                    </n-tag>
-                </n-space>
+                </n-icon>
             </template>
-        </n-thing>
-        <n-thing class="filter-block">
-            <template #footer>
-                Когда пойдёте в банк?
-            </template>
-            <template #action>
-                <n-space>
-                    <n-tag
-                        round
-                        checkable
-                        :checked="selectedVisitTimeVariant == 'now'"
-                        @update-checked="() => selectedVisitTimeVariant = 'now'"
-                        class="chip"
-                        type="info"
-                    >
-                        Сейчас
-                    </n-tag>
-                    <n-tag
-                        bordered
-                        round
-                        checkable
-                        :checked="selectedVisitTimeVariant == 'oneHourForward'"
-                        @update-checked="() => selectedVisitTimeVariant = 'oneHourForward'"
-                        class="chip"
-                        type="info"
-                    >
-                        Через 1 час
-                    </n-tag>
-                    <n-popover
-                        trigger="click"
-                        :show="showDateTimePicker"
-                        @update-show="(value: boolean) => {
+        </n-button>
+    </div>
+    <n-thing class="filter-block">
+        <template #action>
+            <n-space>
+                <n-tag
+                    round
+                    checkable
+                    :checked="selectedDepartmentType == 'departs'"
+                    @update-checked="() => selectedDepartmentType = 'departs'"
+                    class="chip"
+                    type="info"
+                >
+                    Отделения
+                </n-tag>
+                <n-tag
+                    bordered
+                    round
+                    checkable
+                    :checked="selectedDepartmentType == 'atms'"
+                    @update-checked="() => selectedDepartmentType = 'atms'"
+                    class="chip"
+                    type="info"
+                >
+                    Банкоматы
+                </n-tag>
+            </n-space>
+        </template>
+    </n-thing>
+    <n-thing class="filter-block">
+        <template #footer>
+            Когда пойдёте в банк?
+        </template>
+        <template #action>
+            <n-space>
+                <n-tag
+                    round
+                    checkable
+                    :checked="selectedVisitTimeVariant == 'now'"
+                    @update-checked="() => selectedVisitTimeVariant = 'now'"
+                    class="chip"
+                    type="info"
+                >
+                    Сейчас
+                </n-tag>
+                <n-tag
+                    bordered
+                    round
+                    checkable
+                    :checked="selectedVisitTimeVariant == 'oneHourForward'"
+                    @update-checked="() => selectedVisitTimeVariant = 'oneHourForward'"
+                    class="chip"
+                    type="info"
+                >
+                    Через 1 час
+                </n-tag>
+                <n-popover
+                    trigger="click"
+                    :show="showDateTimePicker"
+                    @update-show="(value: boolean) => {
                             if (value || selectedTime == undefined) return
 
                             selectedVisitTimeVariant = 'now'
                         }"
-                    >
-                        <template #trigger>
-                            <n-tag
-                                bordered
-                                round
-                                checkable
-                                class="chip"
-                                :checked="selectedVisitTimeVariant == 'other'"
-                                @click="(value: boolean) => {
+                >
+                    <template #trigger>
+                        <n-tag
+                            bordered
+                            round
+                            checkable
+                            class="chip"
+                            :checked="selectedVisitTimeVariant == 'other'"
+                            @click="(value: boolean) => {
                                     selectedVisitTimeVariant = 'other';
                                     showDateTimePicker = value
                                 }"
-                            >
-                                Другое время
-                            </n-tag>
-                        </template>
-                        <n-date-picker
-                            panel
-                            type="datetime"
-                            :value="selectedTime"
-                            @update-value="(value: number) =>{
+                        >
+                            Другое время
+                        </n-tag>
+                    </template>
+                    <n-date-picker
+                        panel
+                        type="datetime"
+                        :value="selectedTime"
+                        @update-value="(value: number) =>{
                                 selectedTime = value;
                             }"
-                            @confirm="() => {
+                        @confirm="() => {
                                 showDateTimePicker = false;
                             }"
-                            :default-value="new Date()"
-                            value-format="dd.MM.yyyy"
-                        >
+                        :default-value="new Date()"
+                        value-format="dd.MM.yyyy"
+                    >
 
-                        </n-date-picker>
-                    </n-popover>
-                </n-space>
-            </template>
-        </n-thing>
-        <n-thing class="filter-block">
-            <template #footer>
-                Как будете добираться?
-            </template>
-            <template #action>
-                <n-space>
-                    <n-tag
-                        round
-                        checkable
-                        class="chip"
-                        :checked="selectedRouteType == 'pedestrian'"
-                        @update-checked="() => selectedRouteType = 'pedestrian'"
-                    >
-                        <template #icon>
-                            <n-icon
-                                :class="selectedRouteType == 'pedestrian' ? 'checked-chip-icon' : 'chip-icon'"
-                            >
-                                <DirectionsWalkOutlined/>
-                            </n-icon>
-                        </template>
-                        Пешком
-                    </n-tag>
-                    <n-tag
-                        bordered
-                        round
-                        checkable
-                        class="chip"
-                        :checked="selectedRouteType == 'driving'"
-                        @update-checked="() => selectedRouteType = 'driving'"
-                    >
-                        <template #icon>
-                            <n-icon
-                                :class="selectedRouteType == 'driving' ? 'checked-chip-icon' : 'chip-icon'"
-                            >
-                                <CarOutline/>
-                            </n-icon>
-                        </template>
-                        На машине
-                    </n-tag>
-                </n-space>
-            </template>
-        </n-thing>
-        <n-thing style="margin-top: 8px;">
-            <template #footer>
+                    </n-date-picker>
+                </n-popover>
+            </n-space>
+        </template>
+    </n-thing>
+    <n-thing class="filter-block">
+        <template #footer>
+            Как будете добираться?
+        </template>
+        <template #action>
+            <n-space>
+                <n-tag
+                    round
+                    checkable
+                    class="chip"
+                    :checked="selectedRouteType == 'pedestrian'"
+                    @update-checked="() => selectedRouteType = 'pedestrian'"
+                >
+                    <template #icon>
+                        <n-icon
+                            :class="selectedRouteType == 'pedestrian' ? 'checked-chip-icon' : 'chip-icon'"
+                        >
+                            <DirectionsWalkOutlined/>
+                        </n-icon>
+                    </template>
+                    Пешком
+                </n-tag>
+                <n-tag
+                    bordered
+                    round
+                    checkable
+                    class="chip"
+                    :checked="selectedRouteType == 'driving'"
+                    @update-checked="() => selectedRouteType = 'driving'"
+                >
+                    <template #icon>
+                        <n-icon
+                            :class="selectedRouteType == 'driving' ? 'checked-chip-icon' : 'chip-icon'"
+                        >
+                            <CarOutline/>
+                        </n-icon>
+                    </template>
+                    На машине
+                </n-tag>
+            </n-space>
+        </template>
+    </n-thing>
+    <n-thing style="margin-top: 8px;">
+        <template #footer>
                 <span style="margin-left: 8px;">
                     Отделения поблизости
                 </span>
-            </template>
-            <template #action>
-                <n-list
-                    hoverable
-                    clickable
-                    :show-divider=false
+        </template>
+        <template #action>
+            <n-list
+                hoverable
+                clickable
+                :show-divider=false
+            >
+                <n-list-item
+                    class="list-item"
+                    v-for="_ in items"
                 >
-                    <n-list-item
-                        class="list-item"
-                        v-for="_ in items"
-                    >
-                        <DepartmentOption
-                            address="ул. Залупинская, д. 22"
-                            route-distance="1,8 км"
-                            icon="https://sun9-53.userapi.com/impg/hh8KgHsQ2ahxXqLPlEn_6fMwv4L-24OdtQQtZg/-ZOhX3i7pXw.jpg?size=1024x1024&quality=95&sign=71a7f9116f3a3f4de8d09b0679c6f520&type=album"
-                            route-time="от 23 мин.">
-                            <template #icon>
-                                <DirectionsWalkOutlined/>
-                            </template>
-                        </DepartmentOption>
-                    </n-list-item>
-                </n-list>
-            </template>
-        </n-thing>
+                    <DepartmentOption
+                        address="ул. Залупинская, д. 22"
+                        route-distance="1,8 км"
+                        icon="https://sun9-53.userapi.com/impg/hh8KgHsQ2ahxXqLPlEn_6fMwv4L-24OdtQQtZg/-ZOhX3i7pXw.jpg?size=1024x1024&quality=95&sign=71a7f9116f3a3f4de8d09b0679c6f520&type=album"
+                        route-time="от 23 мин.">
+                        <template #icon>
+                            <DirectionsWalkOutlined/>
+                        </template>
+                    </DepartmentOption>
+                </n-list-item>
+            </n-list>
+        </template>
+    </n-thing>
 </template>
 
 <style scoped>
@@ -240,7 +242,6 @@ watchEffect(() => {
 }
 
 .search-input, .options-button {
-    background: var(--inner-container-color);
     text-align: left;
     border-radius: 12px;
     padding: 6px 10px;
@@ -251,6 +252,7 @@ watchEffect(() => {
 
 .options-button {
     width: 48px;
+    margin-left: 10px;
 }
 
 .chip-icon {

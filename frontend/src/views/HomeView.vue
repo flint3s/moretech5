@@ -84,9 +84,10 @@
         </n-button>
 
         <div class="menu-card">
-          <n-card class="main-menu">
+          <n-card class="main-menu" content-style="padding: 20px 16px">
 
             <MainMenu @update:selected-department-type="t => selectedMarkersMode = t"/>
+<!--              <FiltersMenu/>-->
           </n-card>
         </div>
       </div>
@@ -127,6 +128,7 @@ import userMarkIconBackdrop from "@/assets/user-mark-back.png"
 import {mapSettings} from "@/main.ts";
 import MainMenu from "@components/MainMenu.vue";
 import {useRootStore} from "@/store/rootStore.ts";
+// import FiltersMenu from "@components/FiltersMenu.vue";
 
 const rootStore = useRootStore();
 
@@ -288,7 +290,6 @@ const onMapCreated = (e: any) => {
 }
 
 .main-menu {
-  padding: 20px 12px;
   border-radius: 16px;
   width: 400px;
   text-align: left;

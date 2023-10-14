@@ -6,17 +6,20 @@ import ArrowLeft from "@components/icons/ArrowLeft.vue";
 <template>
     <div class="filter-menu">
         <div class="filter-header">
-            <n-space>
+            <n-space class="flex-v-center">
                 <n-button
-                    quaternary
+                    round
+                    text
                     :focusable="false"
+                    class="back-button-icon"
                 >
                     <template #icon>
-                        <n-icon size="24">
+                        <n-icon>
                             <ArrowLeft/>
                         </n-icon>
                     </template>
                 </n-button>
+                <n-h2>Фильтры</n-h2>
             </n-space>
             <n-space>
                 <n-button
@@ -39,12 +42,6 @@ import ArrowLeft from "@components/icons/ArrowLeft.vue";
 </template>
 
 <style scoped>
-.filter-menu {
-    padding: 20px 12px;
-    width: 400px;
-    background: var(--container-color);
-}
-
 .filter-header {
     display: flex;
     align-items: center;
@@ -53,6 +50,20 @@ import ArrowLeft from "@components/icons/ArrowLeft.vue";
 
 .filter-button {
     color: var(--accent-color);
+}
+
+.back-button-icon {
+    width: 36px;
+    height: 36px;
+}
+
+.back-button-icon:hover {
+    color: var(--accent-color);
+}
+
+.flex-v-center {
+    display: flex;
+    align-items: center;
 }
 
 </style>
