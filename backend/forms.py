@@ -6,3 +6,7 @@ class CoordsDto(BaseModel):
     longitude1: float
     latitude2: float
     longitude2: float
+
+
+class AddressDto(BaseModel):
+    address: str

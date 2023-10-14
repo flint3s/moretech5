@@ -18,10 +18,21 @@ def get_deps_in_coords(latitude1, longitude1, latitude2, longitude2):
                                            {'_id': False}))
 
 
+def get_deps_by_address(address):
+    return list(department_collection.find({"$or": [{"address": {"$regex": address}}, {"salePointName": {"$regex": address}}]},
+                                           {'_id': False}))
+
+
 if __name__ == "__main__":
-    deps = get_deps_in_coords(
-        latitude1=200.0,
-        longitude1=10.124,
-        latitude2=0.012380,
-        longitude2=100.124,
-    )
+    # By coords
+    # deps = get_deps_in_coords(
+    #     latitude1=200.0,
+    #     longitude1=10.124,
+    #     latitude2=0.012380,
+    #     longitude2=100.124,
+    # )
+
+    # By address
+    deps = get_deps_by_address("Зеленоградский» Филиала")
+
+    print(deps)
