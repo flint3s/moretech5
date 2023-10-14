@@ -4,17 +4,23 @@ import DirectionsWalkOutlined from "@components/icons/DirectionsWalkOutlined.vue
 import Search from "@components/icons/Search.vue";
 import OptionsOutlined from "@components/icons/OptionsOutlined.vue";
 import CarOutline from "@components/icons/CarOutline.vue";
-import {ref} from "vue"
+import {ref, watchEffect, defineEmits} from "vue"
 
+const emit = defineEmits(['update:selectedDepartmentType'])
 const items = [1, 2, 3, 4, 5]
 
-const selectedDepartmentType = ref<"department" | "atm">("department")
+const selectedDepartmentType = ref<"departs" | "atms">("departs")
 
 const selectedVisitTimeVariant = ref<"now" | "oneHourForward" | "other">("now")
+//@ts-ignore
 const selectedTime = ref<number | undefined>()
 
 const selectedRouteType = ref<'pedestrian' | 'driving'>("pedestrian")
 
+
+watchEffect(() => {
+  emit('update:selectedDepartmentType', selectedDepartmentType.value)
+})
 </script>
 
 <template>
@@ -47,8 +53,8 @@ const selectedRouteType = ref<'pedestrian' | 'driving'>("pedestrian")
                     <n-tag
                         round
                         checkable
-                        :checked="selectedDepartmentType == 'department'"
-                        @checked-change="() => selectedDepartmentType = 'department'"
+                        :checked="selectedDepartmentType == 'departs'"
+                        @checked-change="() => selectedDepartmentType = 'departs'"
                         class="chip"
                         type="info"
                     >
@@ -58,8 +64,8 @@ const selectedRouteType = ref<'pedestrian' | 'driving'>("pedestrian")
                         bordered
                         round
                         checkable
-                        :checked="selectedDepartmentType == 'atm'"
-                        @checked-change="() => selectedDepartmentType = 'atm'"
+                        :checked="selectedDepartmentType == 'atms'"
+                        @checked-change="() => selectedDepartmentType = 'atms'"
                         class="chip"
                         type="info"
                     >
@@ -167,7 +173,7 @@ const selectedRouteType = ref<'pedestrian' | 'driving'>("pedestrian")
                 >
                     <n-list-item
                         class="list-item"
-                        v-for="item in items"
+                        v-for="_ in items"
                     >
                         <DepartmentOption
                             address="ул. Залупинская, д. 22"
