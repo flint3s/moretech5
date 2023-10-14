@@ -14,3 +14,8 @@ class AddressDto(BaseModel):
 
 class PersonStatusDto(BaseModel):
     person_status: str
+
+
+class UserCoords(BaseModel):
+    latitude: float
+    longitude: float
