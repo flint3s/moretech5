@@ -2,6 +2,15 @@
   <div>
     <n-spin :show="isLoadingMap">
       <div style="position: relative; height: 100vh;">
+        <n-card class="header" content-style="padding: 12px">
+          <div class="container">
+            <img src="@/assets/vtb-logo.svg" alt="">
+            <n-button>
+              Тема
+            </n-button>
+          </div>
+        </n-card>
+
         <YandexMap
             :controls="[]"
             :coordinates="coordinates"
@@ -73,6 +82,10 @@
             <NearMeLocation style="color: black"/>
           </template>
         </n-button>
+
+        <n-card bordered class="menu-card" content-style="padding: 10px;">
+          <MainMenu @update:selected-department-type="t => selectedMarkersMode = t"/>
+        </n-card>
       </div>
     </n-spin>
 
@@ -109,6 +122,7 @@ import markGreenIcon from "@/assets/mark-green.svg"
 import userMarkIcon from "@/assets/user-mark.svg"
 import userMarkIconBackdrop from "@/assets/user-mark-back.png"
 import {mapSettings} from "@/main.ts";
+import MainMenu from "@components/MainMenu.vue";
 
 let yaMap: any = null;
 let activeRoute: any = null;
@@ -285,5 +299,31 @@ const onMapCreated = (e: any) => {
   position: absolute;
   right: 10px;
   top: 730px;
+}
+
+.menu-card {
+  position: absolute;
+  width: 430px;
+  top: 80px;
+  left: 16px;
+  border-radius: 16px;
+  height: calc(100vh - 32px - 80px);
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, .2);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, .15);
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 </style>
