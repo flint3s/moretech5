@@ -2,6 +2,7 @@
   <n-config-provider
       :date-locale="dateRuRU"
       :locale="ruRU"
+      :theme="appTheme"
       :theme-overrides="themeOverrides"
   >
     <n-dialog-provider>
@@ -17,8 +18,16 @@
 </template>
 
 <script lang="ts" setup>
-import {dateRuRU, ruRU} from "naive-ui";
+import {darkTheme, dateRuRU, lightTheme, ruRU} from "naive-ui";
 import themeOverrides from "@/app/naive-ui-theme-overrides.json";
+import {useRootStore} from "@/store/rootStore.ts";
+
+const rootStore = useRootStore();
+rootStore.initTheme()
+
+const appTheme = computed(() => {
+  return rootStore.theme === 'light' ? lightTheme : darkTheme
+})
 </script>
 
 <style>

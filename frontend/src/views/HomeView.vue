@@ -4,8 +4,8 @@
       <div style="position: relative; height: 100vh;">
         <n-card class="header" content-style="padding: 12px">
           <div class="container">
-            <img src="@/assets/vtb-logo.svg" alt="">
-            <n-button>
+            <img alt="" src="@/assets/vtb-logo.svg">
+            <n-button @click="rootStore.toggleTheme()">
               Тема
             </n-button>
           </div>
@@ -83,9 +83,9 @@
           </template>
         </n-button>
 
-        <n-card bordered class="menu-card" content-style="padding: 10px;">
+        <div class="menu-card">
           <MainMenu @update:selected-department-type="t => selectedMarkersMode = t"/>
-        </n-card>
+        </div>
       </div>
     </n-spin>
 
@@ -123,6 +123,9 @@ import userMarkIcon from "@/assets/user-mark.svg"
 import userMarkIconBackdrop from "@/assets/user-mark-back.png"
 import {mapSettings} from "@/main.ts";
 import MainMenu from "@components/MainMenu.vue";
+import {useRootStore} from "@/store/rootStore.ts";
+
+const rootStore = useRootStore();
 
 let yaMap: any = null;
 let activeRoute: any = null;
@@ -287,12 +290,20 @@ const onMapCreated = (e: any) => {
   display: none !important;
 }
 
-.ymaps-2-1-78-ground-pane {
-  filter: invert(100%) !important;
-  -ms-filter: invert(100%) !important;
-  -webkit-filter: invert(100%) !important;
-  -moz-filter: invert(100%) !important;
-  -o-filter: invert(100%) !important;
+html[theme='light'] .ymaps-2-1-79-ground-pane {
+  filter: grayscale(100%) !important;
+  -ms-filter: grayscale(100%) !important;
+  -webkit-filter: grayscale(100%) !important;
+  -moz-filter: grayscale(100%) !important;
+  -o-filter: grayscale(100%) !important;
+}
+
+html[theme='dark'] .ymaps-2-1-79-ground-pane {
+  filter: invert(100%) grayscale(100%) !important;
+  -ms-filter: invert(100%) grayscale(100%) !important;
+  -webkit-filter: invert(100%) grayscale(100%) !important;
+  -moz-filter: invert(100%) grayscale(100%) !important;
+  -o-filter: invert(100%) grayscale(100%) !important;
 }
 
 .current-location-button {
@@ -303,12 +314,9 @@ const onMapCreated = (e: any) => {
 
 .menu-card {
   position: absolute;
-  width: 430px;
   top: 80px;
   left: 16px;
-  border-radius: 16px;
   height: calc(100vh - 32px - 80px);
-  box-shadow: 0 0 10px 2px rgba(0, 0, 0, .2);
 }
 
 .header {
