@@ -41,6 +41,7 @@ watchEffect(() => {
                 class="options-button"
                 quaternary
                 :bordered=false
+                :focusable="false"
             >
                 <template #icon>
                     <OptionsOutlined/>
