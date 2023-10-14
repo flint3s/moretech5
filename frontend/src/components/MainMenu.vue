@@ -233,7 +233,7 @@ watchEffect(() => {
 }
 
 .chip {
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--n-color-checked);
     padding: 0 20px !important;
 }
 

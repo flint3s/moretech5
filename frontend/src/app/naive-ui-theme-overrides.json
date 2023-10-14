@@ -12,11 +12,7 @@
     "textColor1": "rgba(70, 78, 86, 1)",
     "textColor2": "rgba(98, 111, 132, 1)"
   },
-  "Input": {
-    "colorFocus": "rgba(241, 242, 244, 1)"
-  },
   "Tag": {
-    "textColorCheckable": "#0D69F2FF",
-    "textColorHoverCheckable": "#4789EBFF"
+    "textColorCheckable": "colorChecked"
   }
 }

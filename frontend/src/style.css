@@ -42,6 +42,15 @@
     --container-color: #fff;
 }
 
+html[theme='dark'] {
+    --text-primary: #E0E3E7;
+    --light-text-color: #8A96A8;
+    --accent-color: #4789EB;
+    --accent-color-hover: #4789EB;
+    --inner-container-color: #252A32;
+    --container-color: #1A1E23;
+}
+
 html, body {
     transition: background-color .3s ease;
     color: var(--text-primary);
