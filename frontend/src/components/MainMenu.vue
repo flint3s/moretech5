@@ -24,7 +24,6 @@ watchEffect(() => {
 </script>
 
 <template>
-    <n-card class="main-menu">
         <div class="flex-row">
             <n-input
                 class="search-input"
@@ -216,18 +215,9 @@ watchEffect(() => {
                 </n-list>
             </template>
         </n-thing>
-    </n-card>
 </template>
 
 <style scoped>
-.main-menu {
-    padding: 20px 12px;
-    border-radius: 16px;
-    width: 400px;
-    text-align: left;
-    height: 100%;
-}
-
 .flex-row {
     display: flex;
     align-items: center;

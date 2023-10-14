@@ -84,7 +84,10 @@
         </n-button>
 
         <div class="menu-card">
-          <MainMenu @update:selected-department-type="t => selectedMarkersMode = t"/>
+          <n-card class="main-menu">
+
+            <MainMenu @update:selected-department-type="t => selectedMarkersMode = t"/>
+          </n-card>
         </div>
       </div>
     </n-spin>
@@ -282,6 +285,14 @@ const onMapCreated = (e: any) => {
   height: 100vh;
   width: 100vw;
   position: absolute;
+}
+
+.main-menu {
+  padding: 20px 12px;
+  border-radius: 16px;
+  width: 400px;
+  text-align: left;
+  height: 100%;
 }
 
 .ymaps-2-1-79-gotoymaps__container,
