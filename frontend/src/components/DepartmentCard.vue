@@ -287,7 +287,7 @@ const departmentFullness = computed(() => {
   return {0: 'Нет очередей', 1: 'Возможны очереди', 2: 'Высокая загруженность'}[props.department.fullness!]
 })
 
-onMounted(async () => {
+watchEffect(async () => {
   props.department.fullness = (await axiosInstance.post('/fullness_of_department', {department_id: props.department.department_id, date: new Date().getTime()})).data
 })
 </script>
