@@ -1,6 +1,7 @@
-from typing import List
+import datetime
 
 from pydantic import BaseModel
+from typing import List
 
 
 class CoordsDto(BaseModel):
@@ -8,10 +9,16 @@ class CoordsDto(BaseModel):
     longitude1: float
     latitude2: float
     longitude2: float
+    date: datetime.datetime
 
 
 class AddressDto(BaseModel):
     address: str
+
+
+class FullnessDepDto(BaseModel):
+    department_id: int
+    date: datetime.datetime
 
 
 class PersonStatusDto(BaseModel):
