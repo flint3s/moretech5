@@ -29,21 +29,21 @@ async def get_items():
 @app.post("/api/departments_in_coords")
 async def departments_in_coords(coords: CoordsDto):
     deps = get_deps_in_coords(coords.latitude1, coords.longitude1, coords.latitude2, coords.longitude2)
-    if len(deps) < 10:
-        for dep_number in range(len(deps)):
-            for measure in get_fullness_of_deps(coords.date):
-                if deps[dep_number]["department_id"] == measure[1]:
-                    deps[dep_number]["fullness"] = sum(measure[2:len(measure)]) / (len(measure) - 2)
-                    if 0 <= deps[dep_number]["fullness"] <= 4:
-                        deps[dep_number]["fullness"] = 0
-                    if 4 < deps[dep_number]["fullness"] <= 7:
-                        deps[dep_number]["fullness"] = 1
-                    else:
-                        deps[dep_number]["fullness"] = 2
-                    break
-    else:
-        for dep_number in range(len(deps)):
-            deps[dep_number]["fullness"] = 0
+    # if len(deps) < 10:
+    for dep_number in range(len(deps)):
+        for measure in get_fullness_of_deps(coords.date):
+            if deps[dep_number]["department_id"] == measure[1]:
+                deps[dep_number]["fullness"] = sum(measure[2:len(measure)]) / (len(measure) - 2)
+                if 0 <= deps[dep_number]["fullness"] <= 4:
+                    deps[dep_number]["fullness"] = 0
+                if 4 < deps[dep_number]["fullness"] <= 7:
+                    deps[dep_number]["fullness"] = 1
+                else:
+                    deps[dep_number]["fullness"] = 2
+                break
+    # else:
+    #     for dep_number in range(len(deps)):
+    #         deps[dep_number]["fullness"] = 0
     return {"deps": deps,
             "atms": get_atms_in_coords(coords.latitude1, coords.longitude1, coords.latitude2, coords.longitude2)}
 
