@@ -150,6 +150,12 @@ def get_fullness_of_dep(date, department_id):
     return result.result_rows
 
 
+def get_fullness_of_dep_for_graph(department_id):
+    result = clickhouse_client.query(f"SELECT * FROM clients "
+                                     f"WHERE department_id == {department_id}")
+    return result.result_rows
+
+
 if __name__ == "__main__":
     pass
     # By coords

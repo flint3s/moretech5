@@ -25,6 +25,10 @@ class PersonStatusDto(BaseModel):
     person_status: str
 
 
+class DepartmentIdDto(BaseModel):
+    department_id: int
+
+
 class Coords(BaseModel):
     latitude: float
     longitude: float
