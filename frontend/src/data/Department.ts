@@ -22,5 +22,9 @@ export type Department = {
     metroStation: string,
     distance: number,
     kep: boolean,
-    myBranch: boolean
+    myBranch: boolean,
+    routeData?: {
+        distance: string,
+        duration: string
+    }
 }

@@ -1,24 +1,97 @@
 <script lang="ts" setup>
 import ArrowLeft from "@components/icons/ArrowLeft.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 
-const emit = defineEmits(['back', "apply"])
+const emit = defineEmits(['back', "update:filters"])
 
-const selectedCriteria = ref<
-    Array<
-        "individual" |
-        "privilege" |
-        "legalEntity" |
-        "prime" |
-        "availableForDisabledPeople" |
-        "accountsAndCards" |
-        "credits" |
-        "investments" |
-        "servicesForPensioners" |
-        "transfers"
-    >
->([])
+const allServices = [
+  "Открытие стандартного счёта ЛОРО",
+  "Торговое финансирование",
+  "Сделка «иностранная валюта/валюта РФ»",
+  "Операции на межбанковском рынке",
+  "Приём и выдача наличной валюты и российских рублей",
+  "Приём ветхих и изымаемых банкнот на инкассо",
+  "Размен/обмен иностранной валюты",
+  "Покупка и продажа облигаций",
+  "Операции РЕПО",
+  "Выдача и оплата простых векселей ВТБ",
+  "Покупка и продажа еврооблигаций",
+  "Хранение простых векселей ВТБ",
+  "Новация простых векселей ВТБ",
+  "Заключение сделок опцион на облигации",
+  "Заключение сделок форвард на акции",
+  "Новация векселей ВТБ одного номинала на векселя другого",
+  "Кредитование под залог векселей ВТБ",
+  "Подтверждение факта выдачи простых векселей ВТБ",
+  "Операции РЕПО с еврооблигациями",
+  "Обезличенные металлические счета",
+  "Операции с обезличенным драг. металлом",
+  "Операции с физическим драг. металлом",
+  "Привлечение межбанковских кредитов",
+  "Открытие и ведение счетов депо",
+  "Хранение и учёт прав на ценные бумаги",
+  "Операции с ценными бумагами по счетам депо",
+  "Фиксация обременения ценных бумаг",
+  "Сопровождение корпоративных действий",
+  "Изменение условия обременения ценных бумаг",
+  "Открытие и ведение иных счетов",
+  "Услуги, сопутствующие депозитарной деятельност",
+  "Управление краткосрочной ликвидностью",
+  "Размещение долгосрочной ликвидности",
+  "Открыть счет",
+  "Регистрация бизнеса",
+  "Электронная подпись",
+  "Подключить эквайринг",
+  "Оформить кредит",
+  "Онлайн-налог для АУСН",
+  "Расчетный счет для бизнеса",
+  "Оформить карту"
+]
 
+const props = defineProps<{filters: {
+  coords: {
+    latitude: number,
+    longitude: number
+  },
+  entity: string,
+  feature: string,
+  full_mobility: boolean,
+  services: string[]
+}}>()
+
+const _filters = reactive({
+  coords: {
+    latitude: 0,
+    longitude: 0
+  },
+  entity: '',
+  feature: '',
+  full_mobility: false,
+  services: [] as string[]
+})
+
+const clearFilters = () => {
+  _filters.coords = {
+    latitude: 0,
+    longitude: 0
+  }
+  _filters.entity = ''
+  _filters.feature = ''
+  _filters.full_mobility = false
+  _filters.services = [] as string[]
+}
+
+const servicesFilter = ref('')
+const filteredServices = computed(() => {
+  return allServices.filter(s => s.toLowerCase().includes(servicesFilter.value.toLowerCase()))
+})
+
+onMounted(() => {
+  _filters.services = props.filters.services
+  _filters.full_mobility = props.filters.full_mobility
+  _filters.feature = props.filters.feature
+  _filters.entity = props.filters.entity
+})
 </script>
 
 <template>
@@ -45,9 +118,7 @@ const selectedCriteria = ref<
             :focusable="false"
             class="filter-button"
             text
-            @click="() => {
-                selectedCriteria = []
-            }"
+            @click="clearFilters"
         >
           Сбросить
         </n-button>
@@ -55,7 +126,7 @@ const selectedCriteria = ref<
             :focusable="false"
             class="filter-button"
             text
-            @click="() => emit('apply', selectedCriteria)"
+            @click="emit('update:filters', _filters)"
         >
           Готово
         </n-button>
@@ -69,22 +140,22 @@ const selectedCriteria = ref<
     <template #action>
       <n-space>
         <n-tag
-            :checked="selectedCriteria.includes('individual')"
+            :checked="_filters.entity === 'individual'"
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
                 if (value)
-                    selectedCriteria.push('individual');
+                    _filters.entity = 'individual'
                 else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'individual')
+                    _filters.entity = ''
             }"
         >
           Физические лица
         </n-tag>
         <n-tag
-            :checked="selectedCriteria.includes('privilege')"
+            :checked="_filters.feature === 'privilege'"
             bordered
             checkable
             class="chip"
@@ -92,15 +163,15 @@ const selectedCriteria = ref<
             type="info"
             @update-checked="(value: boolean) => {
                 if (value)
-                    selectedCriteria.push('privilege');
+                    _filters.feature = 'privilege'
                 else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'privilege')
+                    _filters.feature = ''
             }"
         >
           Привилегия
         </n-tag>
         <n-tag
-            :checked="selectedCriteria.includes('legalEntity')"
+            :checked="_filters.entity === 'legal'"
             bordered
             checkable
             class="chip"
@@ -108,41 +179,38 @@ const selectedCriteria = ref<
             type="info"
             @update-checked="(value: boolean) => {
               if (value)
-                  selectedCriteria.push('legalEntity');
-              else
-                  selectedCriteria = selectedCriteria.filter(v => v != 'legalEntity')
+                    _filters.entity = 'legal'
+                else
+                    _filters.entity = ''
             }"
         >
           Юридические лица
         </n-tag>
         <n-tag
-            :checked="selectedCriteria.includes('prime')"
+            :checked="_filters.feature === 'prime'"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                if (value)
-                    selectedCriteria.push('prime');
+              if (value)
+                    _filters.feature = 'prime'
                 else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'prime')
+                    _filters.feature = ''
             }"
         >
           Прайм
         </n-tag>
         <n-tag
-            :checked="selectedCriteria.includes('availableForDisabledPeople')"
+            :checked="_filters.full_mobility"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                if (value)
-                    selectedCriteria.push('availableForDisabledPeople');
-                else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'availableForDisabledPeople')
+                _filters.full_mobility=value;
             }"
         >
           Доступно для маломобильных граждан
@@ -153,89 +221,31 @@ const selectedCriteria = ref<
   <n-thing class="filter-block">
     <template #footer>
       Услуги
+      <n-input placeholder="Поиск по услугам" class="mt-2" v-model:value="servicesFilter"/>
     </template>
     <template #action>
-      <n-space>
-        <n-tag
-            :checked="selectedCriteria.includes('accountsAndCards')"
-            checkable
-            class="chip"
-            round
-            type="info"
-            @update-checked="(value: boolean) => {
+      <n-scrollbar style="max-height: 65vh">
+
+        <n-space>
+          <n-tag
+              v-for="service in filteredServices"
+              :checked="_filters.services.includes(service)"
+              checkable
+              class="chip"
+              round
+              style="white-space: break-spaces; height: 38px;"
+              type="info"
+              @update-checked="(value: boolean) => {
                 if (value)
-                    selectedCriteria.push('accountsAndCards');
+                    _filters.services.push(service);
                 else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'accountsAndCards')
+                    _filters.services = _filters.services.filter(v => v != service)
             }"
-        >
-          Банковские счета и карты
-        </n-tag>
-        <n-tag
-            :checked="selectedCriteria.includes('credits')"
-            bordered
-            checkable
-            class="chip"
-            round
-            type="info"
-            @update-checked="(value: boolean) => {
-                if (value)
-                    selectedCriteria.push('credits');
-                else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'credits')
-            }"
-        >
-          Кредиты и займы
-        </n-tag>
-        <n-tag
-            :checked="selectedCriteria.includes('investments')"
-            bordered
-            checkable
-            class="chip"
-            round
-            type="info"
-            @update-checked="(value: boolean) => {
-                if (value)
-                  selectedCriteria.push('investments');
-                else
-                  selectedCriteria = selectedCriteria.filter(v => v != 'investments')
-            }"
-        >
-          Инвестиции и накопления
-        </n-tag>
-        <n-tag
-            :checked="selectedCriteria.includes('servicesForPensioners')"
-            bordered
-            checkable
-            class="chip"
-            round
-            type="info"
-            @update-checked="(value: boolean) => {
-                if (value)
-                    selectedCriteria.push('servicesForPensioners');
-                else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'servicesForPensioners')
-            }"
-        >
-          Банковские услуги для пенсионеров
-        </n-tag>
-        <n-tag
-            :checked="selectedCriteria.includes('transfers')"
-            bordered
-            checkable
-            class="chip"
-            round
-            type="info"
-            @update-checked="(value: boolean) => {
-                if (value)
-                    selectedCriteria.push('transfers');
-                else
-                    selectedCriteria = selectedCriteria.filter(v => v != 'transfers')
-            }"
-        >
-          Переводы и платежи
-        </n-tag>
-      </n-space>
+          >
+            {{ service }}
+          </n-tag>
+        </n-space>
+      </n-scrollbar>
     </template>
   </n-thing>
 </template>

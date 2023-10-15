@@ -78,7 +78,9 @@
           </YandexClusterer>
         </YandexMap>
 
-        <n-card class="route-status" content-style="display: flex; gap: 12px; align-items: center; justify-content: center" v-if="activeRouterInfo.isActive">
+        <n-card v-if="activeRouterInfo.isActive"
+                class="route-status"
+                content-style="display: flex; gap: 12px; align-items: center; justify-content: center">
           <n-button text type="primary" @click="clearActiveRoute">
             <template #icon>
               <CloseIcon/>
@@ -87,7 +89,7 @@
             Отменить
           </n-button>
 
-          <span class="fw-bold" style="font-size: 16px" v-if="activeRouterInfo.isActive">
+          <span v-if="activeRouterInfo.isActive" class="fw-bold" style="font-size: 16px">
             {{ activeRouterInfo.duration.text }}. · {{ activeRouterInfo.distance.text }}
           </span>
         </n-card>
@@ -104,10 +106,16 @@
             <n-card v-if="menuView === 'mainMenu'" class="position-absolute main-menu"
                     content-style="padding: 20px 16px">
               <MainMenu
+                  :atms="atmsInView"
+                  :filters="selectedFilters"
                   :departments="departmentsInView"
+                  :mode="searchDepartments.length > 0 ? 'search-departs' : selectedMarkersMode"
+                  :search-departments="searchDepartments"
                   @to-filters="menuView = 'filters'"
                   @update:selected-department-type="(t: 'atms' | 'departs') => selectedMarkersMode = t"
-                  @open-depart="onOpenDepart"/>
+                  @open-depart="onOpenDepart"
+                  @zoom-atm="onZoomAtm"
+              />
             </n-card>
             <n-card v-else-if="menuView === 'departmentCard' && activeDepart"
                     class="position-absolute main-menu"
@@ -122,13 +130,13 @@
             <n-card v-else-if="menuView === 'filters'"
                     class="position-absolute main-menu"
                     content-style="padding: 20px 16px">
-              <FiltersMenu
-                                @back="menuView = 'mainMenu'"
-                                @apply="args => {
-                                    selectedCriteria = args;
-                                    menuView = 'mainMenu';
-                                }"
-                            />
+              <keep-alive>
+                <FiltersMenu
+                    :filters="selectedFilters"
+                    @back="menuView = 'mainMenu'"
+                    @update:filters="onFiltersApply"
+                />
+              </keep-alive>
             </n-card>
           </transition>
         </n-card>
@@ -157,7 +165,7 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, Ref, ref} from "vue";
+import {onMounted, Ref, ref, watchEffect} from "vue";
 import {loadYmap, YandexClusterer, YandexMap, YandexMarker} from 'vue-yandex-maps'
 import ShareLocation from "@components/icons/ShareLocation.vue";
 import NearMeLocation from "@components/icons/NearMeLocation.vue";
@@ -197,20 +205,51 @@ const detailedControls = {
   zoomControl: {position: {right: 10, top: 500}}
 };
 
-const selectedCriteria = ref<
-    Array<
-        "individual" |
-        "privilege" |
-        "legalEntity" |
-        "prime" |
-        "availableForDisabledPeople" |
-        "accountsAndCards" |
-        "credits" |
-        "investments" |
-        "servicesForPensioners" |
-        "transfers"
-    >
->([])
+const searchDepartments = ref([] as Department[]);
+const selectedFilters = reactive({
+  coords: {
+    latitude: 0,
+    longitude: 0
+  },
+  entity: "",
+  feature: "",
+  full_mobility: false,
+  services: []
+})
+
+const isFiltersSelected = computed(() => {
+  return !!selectedFilters.entity || !!selectedFilters.feature || !!selectedFilters.services.length || selectedFilters.full_mobility
+})
+
+watchEffect(async () => {
+  if (!isFiltersSelected.value) {
+    searchDepartments.value = []
+  } else {
+    const data = (await axiosInstance.post('/nearest_departments_by_coords', selectedFilters)).data as Department[]
+    data.reverse()
+    if (currentUserPosition.value) {
+      (await Promise.all(data.map(d => getRouteData(currentUserPosition.value, d.address, 'pedestrian')))).map((r: any, i) => {
+        data[i].routeData = {duration: '', distance: ''}
+        data[i].routeData!.duration = r.duration.text
+        data[i].routeData!.distance = r.distance.text
+      })
+    }
+    searchDepartments.value = data
+  }
+})
+
+
+const onFiltersApply = (args: any) => {
+  menuView.value = 'mainMenu';
+  selectedFilters.services = args.services;
+  selectedFilters.full_mobility = args.full_mobility;
+  selectedFilters.feature = args.feature;
+  selectedFilters.entity = args.entity;
+  selectedFilters.coords.latitude = currentUserPosition.value[0]
+  selectedFilters.coords.longitude = currentUserPosition.value[1]
+
+  console.log(selectedFilters)
+}
 
 const isGeolocationAvailable = ref(false);
 const isGeolocationRequestShown = ref(false);
@@ -225,6 +264,11 @@ const onOpenDepart = (depart: Department) => {
   activeDepart.value = depart
   menuView.value = "departmentCard"
   coordinates.value = [depart.latitude, depart.longitude]
+  mapZoom.value = 18
+}
+
+const onZoomAtm = (atm: Atm) => {
+  coordinates.value = [atm.latitude, atm.longitude]
   mapZoom.value = 18
 }
 
