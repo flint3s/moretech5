@@ -31,24 +31,26 @@
         Как будете добираться?
       </h5>
 
-      <div style="display:flex; gap: 8px">
-        <div :class="{'active': selectedTransportType === 'pedestrian'}" class="transport-type-card"
-             @click="selectedTransportType = 'pedestrian'">
-          <PersonWalkIcon style="color: currentColor"/>
-          <span>Пешком</span>
-          <span>~18 мин.</span>
+      <n-spin :show="routesInfo.loading">
+        <div style="display:flex; gap: 8px">
+          <div :class="{'active': selectedTransportType === 'pedestrian'}" class="transport-type-card"
+               @click="selectedTransportType = 'pedestrian'">
+            <PersonWalkIcon style="color: currentColor"/>
+            <span>Пешком</span>
+            <span>~{{ routesInfo.pedestrian.duration?.text || '...' }}</span>
+          </div>
+          <div :class="{'active': selectedTransportType === 'driving'}" class="transport-type-card"
+               @click="selectedTransportType = 'driving'">
+            <CarDrivingIcon/>
+            <span>На машине</span>
+            <span>~{{ routesInfo.driving.duration?.text || '...' }}</span>
+          </div>
         </div>
-        <div :class="{'active': selectedTransportType === 'driving'}" class="transport-type-card"
-             @click="selectedTransportType = 'driving'">
-          <CarDrivingIcon/>
-          <span>На машине</span>
-          <span>~6 мин.</span>
-        </div>
-      </div>
 
-      <n-button block size="large" style="margin-top: 16px;" type="primary">
-        Проложить маршрут · 1,1 км
-      </n-button>
+        <n-button block size="large" style="margin-top: 16px;" type="primary" @click="emit('build-route')">
+          Проложить маршрут · {{ routesInfo[selectedTransportType]?.distance?.text }}
+        </n-button>
+      </n-spin>
     </div>
 
     <div>
@@ -100,6 +102,21 @@
         </div>
       </div>
     </div>
+
+    <div style="width: 100%;">
+            <h5 class="fw-normal" style="margin-bottom: 4px; font-size: 14px">Посещаемость</h5>
+
+            <n-radio-group v-model:value="selectedDayOfWeek" style="width: 100%;">
+                <n-radio-button
+                    style="width: calc(100% / 7); text-align: center"
+                    v-for="dayOfWeek in daysOfWeek"
+                    :key="dayOfWeek.value"
+                    :value="dayOfWeek.value"
+                    :label="dayOfWeek.label"
+                />
+            </n-radio-group>
+
+        </div>
   </div>
 </template>
 
@@ -111,13 +128,16 @@ import PremiumBankIcon from "@components/icons/PremiumBankIcon.vue";
 import SofaIcon from "@components/icons/SofaIcon.vue";
 import TwoPersonsIcon from "@components/icons/TwoPersonsIcon.vue";
 import PersonIcon from "@components/icons/PersonIcon.vue";
+import {reactive, ref, watchEffect} from "vue";
+import {getRouteData} from "@data/computeRoute.ts";
 
 interface Props {
-  department: DepartmentType
+  department: DepartmentType,
+  currentUserPosition?: number[]
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['back'])
+const emit = defineEmits(['back', 'build-route'])
 const message = useMessage()
 
 const onClickCopyAddress = () => {
@@ -125,7 +145,69 @@ const onClickCopyAddress = () => {
   message.info('Адрес скопирован')
 }
 
+const routesInfo = reactive({
+  loading: true,
+  pedestrian: {
+    duration: {
+      text: '...'
+    },
+    distance: {
+      text: '...'
+    },
+  },
+  driving: {
+    duration: {
+      text: '...'
+    },
+    distance: {
+      text: '...'
+    },
+  }
+})
+
 const selectedTransportType = ref<'pedestrian' | 'driving'>('pedestrian');
+
+watchEffect(async () => {
+  routesInfo.loading = true
+  if (props.currentUserPosition) {
+    const [p, d] = await Promise.all([getRouteData(props.currentUserPosition, props.department.address, 'pedestrian'), getRouteData(props.currentUserPosition, props.department.address, 'driving')])
+    routesInfo.pedestrian = p as { duration: { text: string; }; distance: { text: string; }; }
+    routesInfo.driving = d as { duration: { text: string; }; distance: { text: string; }; }
+  }
+  routesInfo.loading = false
+})
+
+const daysOfWeek = [
+    {
+        value: "monday",
+        label: "Пн"
+    },
+    {
+        value: "tuesday",
+        label: "Вт"
+    },
+    {
+        value: "wednesday",
+        label: "Ср"
+    },
+    {
+        value: "thursday",
+        label: "Чт"
+    },
+    {
+        value: "friday",
+        label: "Пт"
+    },
+    {
+        value: "saturday",
+        label: "Сб"
+    },
+    {
+        value: "sunday",
+        label: "Вс"
+    },
+]
+const selectedDayOfWeek = ref<{value: string, label: string} | null>(null);
 </script>
 
 <style>
