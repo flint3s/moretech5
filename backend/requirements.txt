@@ -4,3 +4,4 @@ uvicorn[standard]
 python-dotenv
 pymongo
 pytz
+typing

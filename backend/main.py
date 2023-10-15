@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import get_deps_in_coords, get_deps_by_address, get_deps_by_open_status, \
     get_atms_by_address, get_atms_in_coords, get_ten_nearest_departments
-from forms import CoordsDto, AddressDto, PersonStatusDto, UserCoords
+from forms import CoordsDto, AddressDto, PersonStatusDto, ServiceNecessity
 
 load_dotenv()
 
@@ -45,8 +45,8 @@ async def department_by_open_status(person_status_dto: PersonStatusDto):
     return get_deps_by_open_status(person_status_dto.person_status)
 
 @app.post("/api/nearest_departments_by_coords")
-async def department_by_open_status(user_coords: UserCoords):
-    return get_ten_nearest_departments(user_coords)
+async def department_by_open_status(service_necessity: ServiceNecessity):
+    return get_ten_nearest_departments(service_necessity)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -16,6 +18,14 @@ class PersonStatusDto(BaseModel):
     person_status: str
 
 
-class UserCoords(BaseModel):
+class Coords(BaseModel):
     latitude: float
     longitude: float
+
+
+class ServiceNecessity(BaseModel):
+    coords: Coords
+    entity: str
+    feature: str
+    full_mobility: bool
+    services: List[str]

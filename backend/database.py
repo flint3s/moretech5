@@ -5,7 +5,7 @@ import datetime
 
 from pymongo import MongoClient
 
-from forms import UserCoords
+from forms import ServiceNecessity
 
 conn_string = "mongodb://flints:moretechababa@154.194.53.172:27017"
 client = MongoClient(conn_string)
@@ -13,6 +13,7 @@ client = MongoClient(conn_string)
 database_name = "moretech"
 department_collection = client[database_name]["departments"]
 atms_collection = client[database_name]["atms"]
+services_collection = client[database_name]["services"]
 
 best_departments_count = 10
 
@@ -23,6 +24,10 @@ def get_department(department_id):
 
 def get_atm(atm_id):
     return atms_collection.find_one({"atm_id": atm_id}, {'_id': False})
+
+
+def get_all_services():
+    return services_collection.find({{'_id': False}})
 
 
 def get_deps_in_coords(latitude1: float, longitude1: float, latitude2: float, longitude2: float):
@@ -84,20 +89,41 @@ def get_deps_by_open_status(person_status: str):
     return opened_deps
 
 
-def get_ten_nearest_departments(user_coords: UserCoords):
-    departments = department_collection.find({})
+def get_ten_nearest_departments(service_necessity: ServiceNecessity):
+    departments = department_collection.find({"$and": [
+        {"entity": service_necessity.entity},
+        {"feature": service_necessity.feature},
+        {"full_mobility": service_necessity.full_mobility}
+    ]})
+
     result = list()
     for department in departments:
-        result.append({
-            "id": department["department_id"],
-            "distance": get_distance(user_coords.latitude, user_coords.longitude,
-                                     department["latitude"], department["longitude"])
-        })
+        services = department["services"]
+        if (check_on_services(service_necessity.services, services)):
+            result.append({
+                "id": department["department_id"],
+                "distance": get_distance(service_necessity.coords.latitude, service_necessity.coords.longitude,
+                                         department["latitude"], department["longitude"])
+            })
     result = result[:best_departments_count]
     result_departments = list()
     for res in result:
         result_departments.append(department_collection.find_one({"department_id": res["id"]}, {'_id': False}))
     return result_departments
+
+
+def check_on_services(services: list, all_services: list):
+    res = True
+    for service in services:
+        res = res and check_on_service(service, all_services)
+    return res
+
+
+def check_on_service(check_service: str, all_services: list):
+    for service in all_services:
+        if service["name"] == check_service:
+            return True
+    return False
 
 
 def get_distance(x_1: float, y_1: float, x_2: float, y_2: float):
