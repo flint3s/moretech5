@@ -26,7 +26,7 @@
             Загруженность отделения низкая
         </h3>
 
-        <div>
+        <div v-if="isGeolocationAvailable">
             <h5 style="font-weight: normal">
                 Как будете добираться?
             </h5>
@@ -52,6 +52,9 @@
                 </n-button>
             </n-spin>
         </div>
+        <n-alert v-else type="warning" title="Нет доступа к геолокации" show-icon>
+          Включите геолокацию чтобы построить маршрут до отделения
+        </n-alert>
 
         <div>
             <h5 class="fw-normal" style="font-size: 14px">Об отделении</h5>
@@ -200,7 +203,8 @@ import {getRouteData} from "@data/computeRoute.ts";
 
 interface Props {
     department: DepartmentType,
-    currentUserPosition?: number[]
+    currentUserPosition?: number[],
+  isGeolocationAvailable: boolean
 }
 
 const props = defineProps<Props>()

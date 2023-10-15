@@ -107,8 +107,8 @@
                     content-style="padding: 20px 16px">
               <MainMenu
                   :atms="atmsInView"
-                  :filters="selectedFilters"
                   :departments="departmentsInView"
+                  :filters="selectedFilters"
                   :mode="searchDepartments.length > 0 ? 'search-departs' : selectedMarkersMode"
                   :search-departments="searchDepartments"
                   @to-filters="menuView = 'filters'"
@@ -123,6 +123,7 @@
               <DepartmentCard
                   :current-user-position="currentUserPosition"
                   :department="activeDepart"
+                  :is-geolocation-available="isGeolocationAvailable"
                   @back="menuView = 'mainMenu'"
                   @build-route="buildRouteOnMap(activeDepart.address)"
               />
