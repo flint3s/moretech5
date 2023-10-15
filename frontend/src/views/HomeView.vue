@@ -108,7 +108,10 @@
                                 content-style="padding: 20px 16px">
                             <FiltersMenu
                                 @back="menuView = 'mainMenu'"
-                                @apply="args => selectedCriteria = args"
+                                @apply="args => {
+                                    selectedCriteria = args;
+                                    menuView = 'mainMenu';
+                                }"
                             />
                         </n-card>
                     </transition>
