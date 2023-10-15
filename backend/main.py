@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn as uvicorn
 
 from database import get_deps_in_coords, get_deps_by_address, get_deps_by_open_status, \
-    get_atms_by_address, get_atms_in_coords, get_ten_nearest_departments, get_fullness_of_dep
-from forms import CoordsDto, AddressDto, PersonStatusDto, ServiceNecessity
+    get_atms_by_address, get_atms_in_coords, get_ten_nearest_departments, get_fullness_of_deps, get_fullness_of_dep
+from forms import CoordsDto, AddressDto, PersonStatusDto, ServiceNecessity, FullnessDepDto
 
 load_dotenv()
 
@@ -31,7 +31,7 @@ async def departments_in_coords(coords: CoordsDto):
     deps = get_deps_in_coords(coords.latitude1, coords.longitude1, coords.latitude2, coords.longitude2)
     if len(deps) < 10:
         for dep_number in range(len(deps)):
-            for measure in get_fullness_of_dep(coords.date):
+            for measure in get_fullness_of_deps(coords.date):
                 if deps[dep_number]["department_id"] == measure[1]:
                     deps[dep_number]["fullness"] = sum(measure[2:len(measure)]) / (len(measure) - 2)
                     if 0 <= deps[dep_number]["fullness"] <= 4:
@@ -52,6 +52,17 @@ async def departments_in_coords(coords: CoordsDto):
 async def department_by_address(address_dto: AddressDto):
     return {"deps": get_deps_by_address(address_dto.address),
             "atms": get_atms_by_address(address_dto.address)}
+
+
+@app.post("/api/fullness_of_department")
+async def fullness_of_department(fullness_dto: FullnessDepDto):
+    fullness = get_fullness_of_dep(department_id=fullness_dto.department_id, date=fullness_dto.date)[0]
+    fullness_avg = sum(fullness[2:len(fullness)]) / (len(fullness) - 2)
+    if 0 <= fullness_avg <= 4:
+        return 0
+    if 4 < fullness_avg <= 7:
+        return 1
+    return 0
 
 
 @app.post("/api/department_by_open_status")

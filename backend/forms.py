@@ -16,6 +16,11 @@ class AddressDto(BaseModel):
     address: str
 
 
+class FullnessDepDto(BaseModel):
+    department_id: int
+    date: datetime.datetime
+
+
 class PersonStatusDto(BaseModel):
     person_status: str
 

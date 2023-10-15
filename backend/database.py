@@ -135,8 +135,18 @@ def get_distance(x_1: float, y_1: float, x_2: float, y_2: float):
     return sqrt((x_2 - x_1) ** 2 + (y_2 - y_1) ** 2)
 
 
-def get_fullness_of_dep(date):
-    result = clickhouse_client.query(f"SELECT * FROM clients WHERE toDayOfWeek(datetime) == {date.weekday() + 1} AND toHour(datetime) == {date.hour}")
+def get_fullness_of_deps(date):
+    result = clickhouse_client.query(f"SELECT * FROM clients "
+                                     f"WHERE toDayOfWeek(datetime) == {date.weekday() + 1} "
+                                     f"AND toHour(datetime) == {date.hour}")
+    return result.result_rows
+
+
+def get_fullness_of_dep(date, department_id):
+    result = clickhouse_client.query(f"SELECT * FROM clients "
+                                     f"WHERE toDayOfWeek(datetime) == {date.weekday() + 1} "
+                                     f"AND toHour(datetime) == {date.hour} "
+                                     f"AND department_id == {department_id}")
     return result.result_rows
 
 
@@ -161,4 +171,4 @@ if __name__ == "__main__":
     # Get atm
     # print(get_atm(750))
 
-    print(get_fullness_of_dep(datetime.datetime.now()))
+    print(get_fullness_of_deps(datetime.datetime.now()))
