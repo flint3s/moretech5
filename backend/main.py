@@ -73,7 +73,7 @@ async def department_by_open_status(person_status_dto: PersonStatusDto):
 
 
 @app.post("/api/nearest_departments_by_coords")
-async def department_by_open_status(service_necessity: ServiceNecessity):
+async def nearest_departments_by_coords(service_necessity: ServiceNecessity):
     return get_ten_nearest_departments(service_necessity)
 
 
