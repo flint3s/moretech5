@@ -1,13 +1,18 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import DepartmentOption from "@components/DepartmentOption.vue";
 import DirectionsWalkOutlined from "@components/icons/DirectionsWalkOutlined.vue";
 import Search from "@components/icons/Search.vue";
 import OptionsOutlined from "@components/icons/OptionsOutlined.vue";
 import CarOutline from "@components/icons/CarOutline.vue";
-import {ref, watchEffect, defineEmits} from "vue"
+import {defineEmits, ref, watchEffect} from "vue"
+import {Department} from "@data/Department.ts";
 
-const emit = defineEmits(['update:selectedDepartmentType'])
-const items = [1, 2, 3, 4, 5]
+interface Props {
+    departments: Department[]
+}
+
+defineProps<Props>()
+const emit = defineEmits(['update:selectedDepartmentType', 'open-depart', 'to-filters'])
 
 const selectedDepartmentType = ref<"departs" | "atms">("departs")
 
@@ -26,8 +31,8 @@ watchEffect(() => {
 <template>
     <div class="flex-row">
         <n-input
-            class="search-input"
             :bordered=false
+            class="search-input"
             placeholder="Город, район, улица, метро"
         >
             <template #suffix>
@@ -37,10 +42,11 @@ watchEffect(() => {
             </template>
         </n-input>
         <n-button
-            class="options-button"
-            secondary
+            @click="emit('to-filters')"
             :bordered=false
             :focusable="false"
+            class="options-button"
+            secondary
         >
             <template #icon>
                 <n-icon>
@@ -53,23 +59,23 @@ watchEffect(() => {
         <template #action>
             <n-space>
                 <n-tag
-                    round
-                    checkable
                     :checked="selectedDepartmentType == 'departs'"
-                    @update-checked="() => selectedDepartmentType = 'departs'"
+                    checkable
                     class="chip"
+                    round
                     type="info"
+                    @update-checked="() => selectedDepartmentType = 'departs'"
                 >
                     Отделения
                 </n-tag>
                 <n-tag
-                    bordered
-                    round
-                    checkable
                     :checked="selectedDepartmentType == 'atms'"
-                    @update-checked="() => selectedDepartmentType = 'atms'"
+                    bordered
+                    checkable
                     class="chip"
+                    round
                     type="info"
+                    @update-checked="() => selectedDepartmentType = 'atms'"
                 >
                     Банкоматы
                 </n-tag>
@@ -83,29 +89,29 @@ watchEffect(() => {
         <template #action>
             <n-space>
                 <n-tag
-                    round
-                    checkable
                     :checked="selectedVisitTimeVariant == 'now'"
-                    @update-checked="() => selectedVisitTimeVariant = 'now'"
+                    checkable
                     class="chip"
+                    round
                     type="info"
+                    @update-checked="() => selectedVisitTimeVariant = 'now'"
                 >
                     Сейчас
                 </n-tag>
                 <n-tag
-                    bordered
-                    round
-                    checkable
                     :checked="selectedVisitTimeVariant == 'oneHourForward'"
-                    @update-checked="() => selectedVisitTimeVariant = 'oneHourForward'"
+                    bordered
+                    checkable
                     class="chip"
+                    round
                     type="info"
+                    @update-checked="() => selectedVisitTimeVariant = 'oneHourForward'"
                 >
                     Через 1 час
                 </n-tag>
                 <n-popover
-                    trigger="click"
                     :show="showDateTimePicker"
+                    trigger="click"
                     @update-show="(value: boolean) => {
                             if (value || selectedTime == undefined) return
 
@@ -114,11 +120,11 @@ watchEffect(() => {
                 >
                     <template #trigger>
                         <n-tag
+                            :checked="selectedVisitTimeVariant == 'other'"
                             bordered
-                            round
                             checkable
                             class="chip"
-                            :checked="selectedVisitTimeVariant == 'other'"
+                            round
                             @click="(value: boolean) => {
                                     selectedVisitTimeVariant = 'other';
                                     showDateTimePicker = value
@@ -128,17 +134,17 @@ watchEffect(() => {
                         </n-tag>
                     </template>
                     <n-date-picker
+                        :default-value="new Date()"
+                        :value="selectedTime"
                         panel
                         type="datetime"
-                        :value="selectedTime"
-                        @update-value="(value: number) =>{
-                                selectedTime = value;
-                            }"
+                        value-format="dd.MM.yyyy"
                         @confirm="() => {
                                 showDateTimePicker = false;
                             }"
-                        :default-value="new Date()"
-                        value-format="dd.MM.yyyy"
+                        @update-value="(value: number) =>{
+                                selectedTime = value;
+                            }"
                     >
 
                     </n-date-picker>
@@ -153,10 +159,10 @@ watchEffect(() => {
         <template #action>
             <n-space>
                 <n-tag
-                    round
+                    :checked="selectedRouteType == 'pedestrian'"
                     checkable
                     class="chip"
-                    :checked="selectedRouteType == 'pedestrian'"
+                    round
                     @update-checked="() => selectedRouteType = 'pedestrian'"
                 >
                     <template #icon>
@@ -169,11 +175,11 @@ watchEffect(() => {
                     Пешком
                 </n-tag>
                 <n-tag
+                    :checked="selectedRouteType == 'driving'"
                     bordered
-                    round
                     checkable
                     class="chip"
-                    :checked="selectedRouteType == 'driving'"
+                    round
                     @update-checked="() => selectedRouteType = 'driving'"
                 >
                     <template #icon>
@@ -195,26 +201,30 @@ watchEffect(() => {
                 </span>
         </template>
         <template #action>
-            <n-list
-                hoverable
-                clickable
-                :show-divider=false
-            >
-                <n-list-item
-                    class="list-item"
-                    v-for="_ in items"
+            <n-scrollbar style="max-height: 55vh">
+                <n-list
+                    :show-divider=false
+                    clickable
+                    hoverable
                 >
-                    <DepartmentOption
-                        address="ул. Залупинская, д. 22"
-                        route-distance="1,8 км"
-                        icon="https://sun9-53.userapi.com/impg/hh8KgHsQ2ahxXqLPlEn_6fMwv4L-24OdtQQtZg/-ZOhX3i7pXw.jpg?size=1024x1024&quality=95&sign=71a7f9116f3a3f4de8d09b0679c6f520&type=album"
-                        route-time="от 23 мин.">
-                        <template #icon>
-                            <DirectionsWalkOutlined/>
-                        </template>
-                    </DepartmentOption>
-                </n-list-item>
-            </n-list>
+                    <n-list-item
+                        v-for="depart in departments"
+                        class="list-item"
+                    >
+                        <DepartmentOption
+                            :address="depart.address"
+                            icon="https://telegra.ph/file/08190aa90245e99aed9ad.png"
+                            route-distance="1,8 км"
+                            route-time="от 23 мин."
+                            @click="emit('open-depart', depart)"
+                        >
+                            <template #icon>
+                                <DirectionsWalkOutlined/>
+                            </template>
+                        </DepartmentOption>
+                    </n-list-item>
+                </n-list>
+            </n-scrollbar>
         </template>
     </n-thing>
 </template>
@@ -233,7 +243,7 @@ watchEffect(() => {
 }
 
 .chip {
-    border: 1px solid var(--n-color-checked);
+    border: 1px solid var(--accent-color);
     padding: 0 20px !important;
 }
 

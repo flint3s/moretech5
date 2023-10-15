@@ -8,7 +8,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ArrowLeft: typeof import('./src/components/icons/ArrowLeft.vue')['default']
+    CarDrivingIcon: typeof import('./src/components/icons/CarDrivingIcon.vue')['default']
     CarOutline: typeof import('./src/components/icons/CarOutline.vue')['default']
+    DepartmentCard: typeof import('./src/components/DepartmentCard.vue')['default']
     DepartmentOption: typeof import('./src/components/DepartmentOption.vue')['default']
     DirectionsWalkOutlined: typeof import('./src/components/icons/DirectionsWalkOutlined.vue')['default']
     FiltersMenu: typeof import('./src/components/FiltersMenu.vue')['default']
@@ -32,15 +34,21 @@ declare module 'vue' {
     NPopover: typeof import('naive-ui')['NPopover']
     NRadio: typeof import('naive-ui')['NRadio']
     NRadioButton: typeof import('naive-ui')['NRadioButton']
+    NScrollbar: typeof import('naive-ui')['NScrollbar']
     NSpace: typeof import('naive-ui')['NSpace']
     NSpin: typeof import('naive-ui')['NSpin']
     NTag: typeof import('naive-ui')['NTag']
     NText: typeof import('naive-ui')['NText']
     NThing: typeof import('naive-ui')['NThing']
     OptionsOutlined: typeof import('./src/components/icons/OptionsOutlined.vue')['default']
+    PersonIcon: typeof import('./src/components/icons/PersonIcon.vue')['default']
+    PersonWalkIcon: typeof import('./src/components/icons/PersonWalkIcon.vue')['default']
+    PremiumBankIcon: typeof import('./src/components/icons/PremiumBankIcon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Search: typeof import('./src/components/icons/Search.vue')['default']
     ShareLocation: typeof import('./src/components/icons/ShareLocation.vue')['default']
+    SofaIcon: typeof import('./src/components/icons/SofaIcon.vue')['default']
+    TwoPersonsIcon: typeof import('./src/components/icons/TwoPersonsIcon.vue')['default']
   }
 }
