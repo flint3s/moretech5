@@ -22,8 +22,8 @@
             {{ department.address }}
         </h4>
 
-        <h3 style="color: green; font-weight: normal">
-            Загруженность отделения низкая
+        <h3 style="font-weight: normal" :class="{0: 'low', 1: 'medium', 2: 'high'}[department.fullness]" v-if="department.fullness">
+            {{departmentFullness}}
         </h3>
 
         <div v-if="isGeolocationAvailable">
@@ -200,6 +200,7 @@ import TwoPersonsIcon from "@components/icons/TwoPersonsIcon.vue";
 import PersonIcon from "@components/icons/PersonIcon.vue";
 import {reactive, ref, watchEffect} from "vue";
 import {getRouteData} from "@data/computeRoute.ts";
+import {axiosInstance} from "@/api/axiosInstance.ts";
 
 interface Props {
     department: DepartmentType,
@@ -281,6 +282,14 @@ const daysOfWeek = [
 const selectedDayOfWeek = ref<{ value: string, label: string } | null>(null);
 
 const hours = [...Array(24).keys()]
+
+const departmentFullness = computed(() => {
+  return {0: 'Нет очередей', 1: 'Возможны очереди', 2: 'Высокая загруженность'}[props.department.fullness]
+})
+
+onMounted(async () => {
+  props.department.fullness = (await axiosInstance.post('/fullness_of_department', {department_id: props.department.department_id, date: new Date().getTime()})).data
+})
 </script>
 
 <style>
@@ -301,4 +310,17 @@ const hours = [...Array(24).keys()]
     color: var(--accent-color);
     border: solid 1px var(--accent-color);
 }
+
+.low {
+  color: #0E9835
+}
+
+.medium {
+  color: #FF9900
+}
+
+.high {
+  color: #CD1919
+}
+
 </style>

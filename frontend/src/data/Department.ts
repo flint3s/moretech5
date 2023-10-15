@@ -26,5 +26,6 @@ export type Department = {
     routeData?: {
         distance: string,
         duration: string
-    }
+    },
+    fullness?: 0 | 1 | 2
 }

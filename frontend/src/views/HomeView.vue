@@ -54,7 +54,7 @@
                 :marker-id="`2-marker-${department.department_id}`"
                 :options="{
             iconLayout: 'default#image',
-            iconImageHref: markGreenIcon,
+            iconImageHref: department.fullness === 0 ? markGreenIcon : department.fullness === 1 ? markYellowIcon : department.fullness === 2 ? markRedIcon : markBlueIcon,
             iconImageSize: [50, 50],
             iconImageOffset: [-25, -25]
         }"
@@ -106,6 +106,7 @@
             <n-card v-if="menuView === 'mainMenu'" class="position-absolute main-menu"
                     content-style="padding: 20px 16px">
               <MainMenu
+                  @update:date="selectedTime"
                   :atms="atmsInView"
                   :departments="departmentsInView"
                   :filters="selectedFilters"
@@ -174,6 +175,9 @@ import {axiosInstance} from "@/api/axiosInstance.ts";
 import {Department} from "@data/Department.ts";
 import {Atm} from "@data/Atm.ts";
 import markGreenIcon from "@/assets/mark-green.svg"
+import markYellowIcon from "@/assets/mark-yellow.svg"
+import markBlueIcon from "@/assets/mark-blue.svg"
+import markRedIcon from "@/assets/mark-red.svg"
 import userMarkIcon from "@/assets/user-mark.svg"
 import userMarkIconBackdrop from "@/assets/user-mark-back.png"
 import {mapSettings} from "@/main.ts";
@@ -203,7 +207,7 @@ const coordinates = ref([55.7, 37.5]);
 const mapZoom = ref(10);
 const currentUserPosition = ref<number[] | null>(null) as Ref<number[]>;
 const detailedControls = {
-  zoomControl: {position: {right: 10, top: 500}}
+  zoomControl: {position: {right: 10, top: window.innerWidth >= 576 ? 500 : 100}}
 };
 
 const searchDepartments = ref([] as Department[]);
@@ -235,6 +239,7 @@ watchEffect(async () => {
         data[i].routeData!.distance = r.distance.text
       })
     }
+    console.log(await Promise.all(data.map(d => (axiosInstance.post('/fullness_of_department', {department_id: props.department.department_id, date: new Date().getTime()})).data as 0 | 1 | 2)));
     searchDepartments.value = data
   }
 })
@@ -257,6 +262,7 @@ const isGeolocationRequestShown = ref(false);
 const isLoadingMap = ref(true);
 const checkGeolocationIntervalId = ref(null) as Ref<any>;
 const selectedMarkersMode = ref<'departs' | 'atms'>('atms')
+const selectedTime = ref(new Date().getTime());
 
 const menuView = ref<'mainMenu' | 'departmentCard' | 'filters'>('mainMenu')
 const activeDepart = ref<Department | null>(null) as Ref<Department>;
@@ -339,6 +345,7 @@ const onBoundsChanged = async (e: any) => {
     longitude1: e.originalEvent.newBounds[0][1],
     latitude2: e.originalEvent.newBounds[0][0],
     longitude2: e.originalEvent.newBounds[1][1],
+    date: selectedTime.value
   })).data
 
   departmentsInView.value = res.deps
@@ -437,6 +444,36 @@ html[theme='dark'] .ymaps-2-1-79-ground-pane {
   height: calc(100vh - 32px - 80px);
 }
 
+.route-status {
+  position: absolute;
+  top: 80px;
+  left: 40%;
+  max-width: 300px;
+  border-radius: 16px;
+}
+
+@media screen and (max-width: 576px) {
+  .menu-card {
+    left: calc(5% / 2);
+    width: 95%;
+    height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: calc(100% - 416px);
+  }
+
+  .current-location-button {
+    top: 320px;
+    right: 8px;
+  }
+
+  .route-status {
+    top: 80px;
+    left: 10%;
+    width: 90%;
+  }
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -455,13 +492,5 @@ html[theme='dark'] .ymaps-2-1-79-ground-pane {
 
 .ymaps-2-1-79-routerRoutes-pane {
   filter: invert(50%) sepia(85%) saturate(3614%) hue-rotate(202deg) brightness(66%) contrast(115%);
-}
-
-.route-status {
-  position: absolute;
-  top: 80px;
-  left: 40%;
-  max-width: 300px;
-  border-radius: 16px;
 }
 </style>

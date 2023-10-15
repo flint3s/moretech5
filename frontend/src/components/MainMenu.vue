@@ -17,7 +17,7 @@ interface Props {
 }
 
 defineProps<Props>()
-const emit = defineEmits(['update:selectedDepartmentType', 'open-depart', 'to-filters', 'zoom-atm'])
+const emit = defineEmits(['update:selectedDepartmentType', 'open-depart', 'to-filters', 'zoom-atm', 'update:date'])
 
 const selectedDepartmentType = ref<"departs" | "atms">("departs")
 
@@ -27,6 +27,10 @@ const selectedTime = ref<number | undefined>()
 
 const selectedRouteType = ref<'pedestrian' | 'driving'>("pedestrian")
 
+watchEffect(() => {
+  const dt = selectedVisitTimeVariant.value === 'now' ? new Date().getTime() : selectedVisitTimeVariant.value === 'oneHourForward' ? (new Date().getTime() + 60 * 60 * 1000) : selectedTime
+  emit('update:date', dt)
+})
 
 watchEffect(() => {
   emit('update:selectedDepartmentType', selectedDepartmentType.value)
@@ -221,6 +225,7 @@ watchEffect(() => {
             <DepartmentOption
                 :hide-route-info="!depart?.routeData"
                 :address="depart.address"
+                :fullness="departments.length <= 50 ? depart.fullness : null"
                 icon="https://telegra.ph/file/08190aa90245e99aed9ad.png"
                 :route-distance="depart.routeData?.distance || ''"
                 :route-time="depart.routeData?.duration || ''"
@@ -255,6 +260,7 @@ watchEffect(() => {
             <DepartmentOption
                 :hide-route-info="!depart?.routeData"
                 :address="depart.address"
+                :fullness="depart.fullness"
                 icon="https://telegra.ph/file/08190aa90245e99aed9ad.png"
                 :route-distance="depart.routeData?.distance || ''"
                 :route-time="depart.routeData?.duration || ''"
