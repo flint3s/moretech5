@@ -2,20 +2,15 @@
 import ArrowLeft from "@components/icons/ArrowLeft.vue";
 import {ref} from "vue";
 
-const emit = defineEmits(['back'])
+const emit = defineEmits(['back', "apply"])
 
-const selectedDepartmentCriteria = ref<
+const selectedCriteria = ref<
     Array<
         "individual" |
         "privilege" |
         "legalEntity" |
         "prime" |
-        "availableForDisabledPeople"
-    >
->([])
-
-const selectedServiceCriteria = ref<
-    Array<
+        "availableForDisabledPeople" |
         "accountsAndCards" |
         "credits" |
         "investments" |
@@ -51,9 +46,8 @@ const selectedServiceCriteria = ref<
             class="filter-button"
             text
             @click="() => {
-                        selectedDepartmentCriteria = []
-                        selectedServiceCriteria = []
-                    }"
+                selectedCriteria = []
+            }"
         >
           Сбросить
         </n-button>
@@ -61,6 +55,7 @@ const selectedServiceCriteria = ref<
             :focusable="false"
             class="filter-button"
             text
+            @click="() => emit('apply', selectedCriteria)"
         >
           Готово
         </n-button>
@@ -74,81 +69,81 @@ const selectedServiceCriteria = ref<
     <template #action>
       <n-space>
         <n-tag
-            :checked="selectedDepartmentCriteria.includes('individual')"
+            :checked="selectedCriteria.includes('individual')"
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedDepartmentCriteria.push('individual');
-                        else
-                            selectedDepartmentCriteria = selectedDepartmentCriteria.filter(v => v != 'individual')
-                    }"
+                if (value)
+                    selectedCriteria.push('individual');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'individual')
+            }"
         >
           Физические лица
         </n-tag>
         <n-tag
-            :checked="selectedDepartmentCriteria.includes('privilege')"
+            :checked="selectedCriteria.includes('privilege')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedDepartmentCriteria.push('privilege');
-                        else
-                            selectedDepartmentCriteria = selectedDepartmentCriteria.filter(v => v != 'privilege')
-                        }"
+                if (value)
+                    selectedCriteria.push('privilege');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'privilege')
+            }"
         >
           Привилегия
         </n-tag>
         <n-tag
-            :checked="selectedDepartmentCriteria.includes('legalEntity')"
+            :checked="selectedCriteria.includes('legalEntity')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                      if (value)
-                          selectedDepartmentCriteria.push('legalEntity');
-                      else
-                          selectedDepartmentCriteria = selectedDepartmentCriteria.filter(v => v != 'legalEntity')
-                    }"
+              if (value)
+                  selectedCriteria.push('legalEntity');
+              else
+                  selectedCriteria = selectedCriteria.filter(v => v != 'legalEntity')
+            }"
         >
           Юридические лица
         </n-tag>
         <n-tag
-            :checked="selectedDepartmentCriteria.includes('prime')"
+            :checked="selectedCriteria.includes('prime')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedDepartmentCriteria.push('prime');
-                        else
-                            selectedDepartmentCriteria = selectedDepartmentCriteria.filter(v => v != 'prime')
-                        }"
+                if (value)
+                    selectedCriteria.push('prime');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'prime')
+            }"
         >
           Прайм
         </n-tag>
         <n-tag
-            :checked="selectedDepartmentCriteria.includes('availableForDisabledPeople')"
+            :checked="selectedCriteria.includes('availableForDisabledPeople')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedDepartmentCriteria.push('availableForDisabledPeople');
-                        else
-                            selectedDepartmentCriteria = selectedDepartmentCriteria.filter(v => v != 'availableForDisabledPeople')
-                    }"
+                if (value)
+                    selectedCriteria.push('availableForDisabledPeople');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'availableForDisabledPeople')
+            }"
         >
           Доступно для маломобильных граждан
         </n-tag>
@@ -162,81 +157,81 @@ const selectedServiceCriteria = ref<
     <template #action>
       <n-space>
         <n-tag
-            :checked="selectedServiceCriteria.includes('accountsAndCards')"
+            :checked="selectedCriteria.includes('accountsAndCards')"
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedServiceCriteria.push('accountsAndCards');
-                        else
-                            selectedServiceCriteria = selectedServiceCriteria.filter(v => v != 'accountsAndCards')
-                    }"
+                if (value)
+                    selectedCriteria.push('accountsAndCards');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'accountsAndCards')
+            }"
         >
           Банковские счета и карты
         </n-tag>
         <n-tag
-            :checked="selectedServiceCriteria.includes('credits')"
+            :checked="selectedCriteria.includes('credits')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedServiceCriteria.push('credits');
-                        else
-                            selectedServiceCriteria = selectedServiceCriteria.filter(v => v != 'credits')
-                        }"
+                if (value)
+                    selectedCriteria.push('credits');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'credits')
+            }"
         >
           Кредиты и займы
         </n-tag>
         <n-tag
-            :checked="selectedServiceCriteria.includes('investments')"
+            :checked="selectedCriteria.includes('investments')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                      if (value)
-                          selectedServiceCriteria.push('investments');
-                      else
-                          selectedServiceCriteria = selectedServiceCriteria.filter(v => v != 'investments')
-                    }"
+                if (value)
+                  selectedCriteria.push('investments');
+                else
+                  selectedCriteria = selectedCriteria.filter(v => v != 'investments')
+            }"
         >
           Инвестиции и накопления
         </n-tag>
         <n-tag
-            :checked="selectedServiceCriteria.includes('servicesForPensioners')"
+            :checked="selectedCriteria.includes('servicesForPensioners')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedServiceCriteria.push('servicesForPensioners');
-                        else
-                            selectedServiceCriteria = selectedServiceCriteria.filter(v => v != 'servicesForPensioners')
-                        }"
+                if (value)
+                    selectedCriteria.push('servicesForPensioners');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'servicesForPensioners')
+            }"
         >
           Банковские услуги для пенсионеров
         </n-tag>
         <n-tag
-            :checked="selectedServiceCriteria.includes('transfers')"
+            :checked="selectedCriteria.includes('transfers')"
             bordered
             checkable
             class="chip"
             round
             type="info"
             @update-checked="(value: boolean) => {
-                        if (value)
-                            selectedServiceCriteria.push('transfers');
-                        else
-                            selectedServiceCriteria = selectedServiceCriteria.filter(v => v != 'transfers')
-                    }"
+                if (value)
+                    selectedCriteria.push('transfers');
+                else
+                    selectedCriteria = selectedCriteria.filter(v => v != 'transfers')
+            }"
         >
           Переводы и платежи
         </n-tag>
