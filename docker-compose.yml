@@ -26,6 +26,17 @@ services:
     ports:
       - '27017:27017'
 
+  clickhouse:
+    image: yandex/clickhouse-server
+    container_name: "clickhouse"
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    env_file:
+      - stack.env
+    volumes:
+      - clickhouse:/var/lib/clickhouse
+
 volumes:
   mongo:
     driver: local
@@ -33,3 +44,4 @@ volumes:
        o: bind
        type: none
        device: /var/local/mongo
+  clickhouse:
