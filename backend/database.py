@@ -1,11 +1,13 @@
-from math import sqrt
-
-import pytz
+import clickhouse_connect
 import datetime
+import pytz
 
 from pymongo import MongoClient
+from math import sqrt
 
 from forms import ServiceNecessity
+
+clickhouse_client = clickhouse_connect.get_client(host='154.194.53.172', port="8123", username="flints", password="moreflints")
 
 conn_string = "mongodb://flints:moretechababa@154.194.53.172:27017"
 client = MongoClient(conn_string)
@@ -132,6 +134,12 @@ def check_on_service(check_service: str, all_services: list):
 def get_distance(x_1: float, y_1: float, x_2: float, y_2: float):
     return sqrt((x_2 - x_1) ** 2 + (y_2 - y_1) ** 2)
 
+
+def get_fullness_of_dep(date):
+    result = clickhouse_client.query(f"SELECT * FROM clients WHERE toDayOfWeek(datetime) == {date.weekday() + 1} AND toHour(datetime) == {date.hour}")
+    return result.result_rows
+
+
 if __name__ == "__main__":
     pass
     # By coords
@@ -152,3 +160,5 @@ if __name__ == "__main__":
 
     # Get atm
     # print(get_atm(750))
+
+    print(get_fullness_of_dep(datetime.datetime.now()))
