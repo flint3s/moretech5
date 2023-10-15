@@ -90,16 +90,19 @@ def get_deps_by_open_status(person_status: str):
 
 
 def get_ten_nearest_departments(service_necessity: ServiceNecessity):
-    departments = department_collection.find({"$and": [
-        {"entity": service_necessity.entity},
-        {"feature": service_necessity.feature},
-        {"full_mobility": service_necessity.full_mobility}
-    ]})
+    dep_filter = list()
+    dep_filter.append({"full_mobility": service_necessity.full_mobility})
+    if service_necessity.entity != "":
+        dep_filter.append({"entity": service_necessity.entity})
+    if service_necessity.feature != "":
+        dep_filter.append({"feature": service_necessity.feature})
+
+    departments = department_collection.find({"$and": dep_filter})
 
     result = list()
     for department in departments:
         services = department["services"]
-        if (check_on_services(service_necessity.services, services)):
+        if check_on_services(service_necessity.services, services):
             result.append({
                 "id": department["department_id"],
                 "distance": get_distance(service_necessity.coords.latitude, service_necessity.coords.longitude,
