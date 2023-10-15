@@ -34,9 +34,9 @@ async def departments_in_coords(coords: CoordsDto):
         for measure in get_fullness_of_deps(coords.date):
             if deps[dep_number]["department_id"] == measure[1]:
                 deps[dep_number]["fullness"] = sum(measure[2:len(measure)]) / (len(measure) - 2)
-                if 0 <= deps[dep_number]["fullness"] <= 4:
+                if 0 <= deps[dep_number]["fullness"] <= 5.3:
                     deps[dep_number]["fullness"] = 0
-                if 4 < deps[dep_number]["fullness"] <= 7:
+                if 5.3 < deps[dep_number]["fullness"] <= 5.9:
                     deps[dep_number]["fullness"] = 1
                 else:
                     deps[dep_number]["fullness"] = 2
@@ -58,9 +58,9 @@ async def department_by_address(address_dto: AddressDto):
 async def fullness_of_department(fullness_dto: FullnessDepDto):
     fullness = get_fullness_of_dep(department_id=fullness_dto.department_id, date=fullness_dto.date)[0]
     fullness_avg = sum(fullness[2:len(fullness)]) / (len(fullness) - 2)
-    if 0 <= fullness_avg <= 4:
+    if 0 <= fullness_avg <= 5.3:
         return 0
-    if 4 < fullness_avg <= 7:
+    if 5.3 < fullness_avg <= 5.9:
         return 1
     return 0
 
