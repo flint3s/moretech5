@@ -83,13 +83,33 @@
           </template>
         </n-button>
 
-        <div class="menu-card">
-          <n-card class="main-menu" content-style="padding: 20px 16px">
-
-            <MainMenu @update:selected-department-type="t => selectedMarkersMode = t"/>
-<!--              <FiltersMenu/>-->
-          </n-card>
-        </div>
+        <n-card class="menu-card main-menu p-0" content-style="padding: 0">
+          <transition name="page">
+            <n-card v-if="menuView === 'mainMenu'" class="position-absolute main-menu"
+                    content-style="padding: 20px 16px">
+              <MainMenu
+                  @to-filters="menuView = 'filters'"
+                  :departments="departmentsInView"
+                  @update:selected-department-type="(t: 'atms' | 'departs') => selectedMarkersMode = t"
+                  @open-depart="onOpenDepart"/>
+            </n-card>
+            <n-card v-else-if="menuView === 'departmentCard' && departmentsInView[0]"
+                    class="position-absolute main-menu"
+                    content-style="padding: 20px 16px">
+              <DepartmentCard
+                  :department="departmentsInView[0]"
+                  @back="menuView = 'mainMenu'"
+              />
+            </n-card>
+            <n-card v-else-if="menuView === 'filters'"
+                    class="position-absolute main-menu"
+                    content-style="padding: 20px 16px">
+              <FiltersMenu
+                  @back="menuView = 'mainMenu'"
+              />
+            </n-card>
+          </transition>
+        </n-card>
       </div>
     </n-spin>
 
@@ -128,7 +148,8 @@ import userMarkIconBackdrop from "@/assets/user-mark-back.png"
 import {mapSettings} from "@/main.ts";
 import MainMenu from "@components/MainMenu.vue";
 import {useRootStore} from "@/store/rootStore.ts";
-// import FiltersMenu from "@components/FiltersMenu.vue";
+import DepartmentCard from "@components/DepartmentCard.vue";
+import FiltersMenu from "@components/FiltersMenu.vue";
 
 const rootStore = useRootStore();
 
@@ -146,6 +167,14 @@ const isGeolocationRequestShown = ref(false);
 const isLoadingMap = ref(true);
 const checkGeolocationIntervalId = ref(null) as Ref<any>;
 const selectedMarkersMode = ref<'departs' | 'atms'>('atms')
+
+const menuView = ref<'mainMenu' | 'departmentCard'| 'filters'>('mainMenu')
+const activeDepart = ref<Department | null>(null) as Ref<Department>;
+
+const onOpenDepart = (depart: Department) => {
+  activeDepart.value = depart
+  menuView.value = "departmentCard"
+}
 
 const geolocationAccessCheck = () => {
   navigator.geolocation.getCurrentPosition((data) => {
@@ -345,5 +374,9 @@ html[theme='dark'] .ymaps-2-1-79-ground-pane {
   justify-content: space-between;
   max-width: 1440px;
   margin: 0 auto;
+}
+
+.ymaps-2-1-79-routerRoutes-pane {
+  filter: invert(50%) sepia(85%) saturate(3614%) hue-rotate(202deg) brightness(66%) contrast(115%);
 }
 </style>

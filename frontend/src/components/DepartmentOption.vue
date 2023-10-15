@@ -15,11 +15,14 @@ const props = defineProps<Props>()
 
 <template>
     <div class="option">
-        <n-avatar
-            round
-            :src=props.icon
-            style="width: 48px;height: 48px;"
-        />
+      <div style="width: 48px;">
+          <n-avatar
+              round
+              circle
+              :src="props.icon"
+              style="width: 48px;height: 48px; aspect-ratio: 1"
+          />
+      </div>
         <n-thing style="padding: 0 20px;">
             <template #header>
                 {{ props.address }}
