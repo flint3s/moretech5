@@ -12,7 +12,7 @@ interface Props {
 }
 
 const departmentFullness = computed(() => {
-  return {0: 'Нет очередей', 1: 'Возможны очереди', 2: 'Высокая загруженность'}[props.fullness]
+  return {0: 'Нет очередей', 1: 'Возможны очереди', 2: 'Высокая загруженность'}[props.fullness!]
 })
 
 const props = defineProps<Props>()
@@ -32,7 +32,7 @@ const props = defineProps<Props>()
     <n-thing style="padding: 0 20px;">
       <template #header>
         <div class="d-flex flex-column">
-          <span :class="{0: 'low', 1: 'medium', 2: 'high'}[fullness]">{{ departmentFullness }}</span>
+          <span :class="{0: 'low', 1: 'medium', 2: 'high'}[fullness!]">{{ departmentFullness }}</span>
           <span>{{ props.address }}</span>
         </div>
       </template>

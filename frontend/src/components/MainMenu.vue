@@ -225,7 +225,7 @@ watchEffect(() => {
             <DepartmentOption
                 :hide-route-info="!depart?.routeData"
                 :address="depart.address"
-                :fullness="departments.length <= 50 ? depart.fullness : null"
+                :fullness="departments.length <= 50 ? depart.fullness : undefined"
                 icon="https://telegra.ph/file/08190aa90245e99aed9ad.png"
                 :route-distance="depart.routeData?.distance || ''"
                 :route-time="depart.routeData?.duration || ''"

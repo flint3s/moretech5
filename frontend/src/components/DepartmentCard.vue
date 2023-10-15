@@ -22,7 +22,7 @@
             {{ department.address }}
         </h4>
 
-        <h3 style="font-weight: normal" :class="{0: 'low', 1: 'medium', 2: 'high'}[department.fullness]" v-if="department.fullness">
+        <h3 style="font-weight: normal" :class="{0: 'low', 1: 'medium', 2: 'high'}[department.fullness!]" v-if="[0, 1, 2].includes(department.fullness!)">
             {{departmentFullness}}
         </h3>
 
@@ -284,7 +284,7 @@ const selectedDayOfWeek = ref<{ value: string, label: string } | null>(null);
 const hours = [...Array(24).keys()]
 
 const departmentFullness = computed(() => {
-  return {0: 'Нет очередей', 1: 'Возможны очереди', 2: 'Высокая загруженность'}[props.department.fullness]
+  return {0: 'Нет очередей', 1: 'Возможны очереди', 2: 'Высокая загруженность'}[props.department.fullness!]
 })
 
 onMounted(async () => {

@@ -45,9 +45,25 @@
           />
 
 
-          <YandexClusterer v-if="selectedMarkersMode === 'departs'" :options="{ preset: 'islands#nightClusterIcons' }">
+          <YandexClusterer v-if="selectedMarkersMode === 'departs' && !isFiltersSelected" :options="{ preset: 'islands#nightClusterIcons' }">
             <YandexMarker
                 v-for="department in departmentsInView"
+                :key="`2-marker-${department.department_id}`"
+                :coordinates="[department.latitude, department.longitude]"
+                :events="['click']"
+                :marker-id="`2-marker-${department.department_id}`"
+                :options="{
+            iconLayout: 'default#image',
+            iconImageHref: department.fullness === 0 ? markGreenIcon : department.fullness === 1 ? markYellowIcon : department.fullness === 2 ? markRedIcon : markBlueIcon,
+            iconImageSize: [50, 50],
+            iconImageOffset: [-25, -25]
+        }"
+                @click="onOpenDepart(department)"
+            />
+          </YandexClusterer>
+          <YandexClusterer v-else-if="selectedMarkersMode === 'departs' && isFiltersSelected" :options="{ preset: 'islands#nightClusterIcons' }">
+            <YandexMarker
+                v-for="department in searchDepartments"
                 :key="`2-marker-${department.department_id}`"
                 :coordinates="[department.latitude, department.longitude]"
                 :events="['click']"
@@ -106,12 +122,12 @@
             <n-card v-if="menuView === 'mainMenu'" class="position-absolute main-menu"
                     content-style="padding: 20px 16px">
               <MainMenu
-                  @update:date="selectedTime"
                   :atms="atmsInView"
                   :departments="departmentsInView"
                   :filters="selectedFilters"
                   :mode="searchDepartments.length > 0 ? 'search-departs' : selectedMarkersMode"
                   :search-departments="searchDepartments"
+                  @update:date="t => selectedTime = t"
                   @to-filters="menuView = 'filters'"
                   @update:selected-department-type="(t: 'atms' | 'departs') => selectedMarkersMode = t"
                   @open-depart="onOpenDepart"
@@ -239,8 +255,12 @@ watchEffect(async () => {
         data[i].routeData!.distance = r.distance.text
       })
     }
-    console.log(await Promise.all(data.map(d => (axiosInstance.post('/fullness_of_department', {department_id: props.department.department_id, date: new Date().getTime()})).data as 0 | 1 | 2)));
+
+    (await Promise.all(data.map(d => axiosInstance.post('/fullness_of_department', {date: selectedTime.value, department_id: d.department_id})))).map(r => r.data).forEach((f, i) => data[i].fullness = f)
+
     searchDepartments.value = data
+    coordinates.value = [searchDepartments.value[0].latitude, searchDepartments.value[0].longitude]
+    mapZoom.value = 17
   }
 })
 
@@ -253,8 +273,6 @@ const onFiltersApply = (args: any) => {
   selectedFilters.entity = args.entity;
   selectedFilters.coords.latitude = currentUserPosition.value[0]
   selectedFilters.coords.longitude = currentUserPosition.value[1]
-
-  console.log(selectedFilters)
 }
 
 const isGeolocationAvailable = ref(false);
