@@ -15,6 +15,10 @@ services:
     ports:
       - '3000:80'
 
+  queue:
+    image: philipoff/moretech5-queue:0.0.1
+    container_name: 'queue'
+
   mongo:
     image: mongo
     container_name: "mongo"
